@@ -23,8 +23,8 @@ canvas.height = window.innerHeight;
 
 var ctx = canvas.getContext('2d');
 var generation = 0;
-var size_o = 60;
-var trees = 10;
+var size_o = 160;
+var trees = 1;
 var forest=[];
 for (var i=0; i<trees; i++) forest.push(new Branch(size_o,0));
 
@@ -55,9 +55,9 @@ function Branch(size, rotation) {
 	var _col = 'hsl('+hue+',100%,' + lum + '%)';
 
 	this.children = [];
-	if(size>20) {
-		this.children.push(new Branch(size*random(0.7,0.9), random(0,30)));
-		this.children.push(new Branch(size*random(0.7,0.9), random(0,-30)));
+	if(size>25) {
+		this.children.push(new Branch(size*random(0.7,0.9), random(0,35)));
+		this.children.push(new Branch(size*random(0.7,0.9), random(0,-35)));
 	}
 
 	this.render = function(col) {
@@ -68,7 +68,7 @@ function Branch(size, rotation) {
 		grad.addColorStop(1,String(_col));
 		grad.addColorStop(0,String(col));
 		ctx.strokeStyle = grad;
-		hue+=random(0,10);
+		hue+=random(0,2);
 		_col = 'hsl('+hue+',100%,' + lum + '%)';
 		ctx.beginPath();
 		ctx.lineWidth = size*0.1*growth;
