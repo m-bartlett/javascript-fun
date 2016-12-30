@@ -24,6 +24,8 @@ canvas.height = window.innerHeight;
 var ctx = canvas.getContext('2d');
 var generation = 0;
 var size_o = 100;
+var size_m = 27;
+var deg = 35;
 var trees = 1;
 var forest=[];
 for (var i=0; i<trees; i++) forest.push(new Branch(size_o,0));
@@ -43,22 +45,57 @@ function draw() {
 	window.requestAnimationFrame(draw);
 }
 
+function Leaf(size) {
+	generation++;
+	var growth = 0;
+	var delay = generation*10;
+	//var lum = Math.pow((parseFloat(size)/parseFloat(size_o)),1/4)*100.0;
+	//var lum = (parseFloat(size)/parseFloat(size_o))*100.0;
+	var lum = 60;
+	var hue = random(0,360);
+	var _col = 'hsl('+hue+',100%,' + 60 + '%)';
+
+	this.render = function(col) {
+		ctx.save();
+		var radius = size*growth*0.5;
+		var grad = ctx.createLinearGradient(0, 0, 0, -size*growth);
+		grad.addColorStop(1,String(_col));
+		grad.addColorStop(0,String(col));
+		ctx.fillStyle = grad;
+		hue+=random(0.5,2);
+		_col = 'hsl('+hue+',100%,' + lum + '%)';
+   	ctx.translate(0,5);
+		ctx.beginPath();
+		ctx.moveTo(0, 0);
+		//cx, cy,  ex, ey
+		ctx.quadraticCurveTo(size*growth*2/5, -size*growth/6, 0, -size*growth*2/3);
+		ctx.quadraticCurveTo(-size*growth*2/5, -size*growth/6, 0, 0);
+		ctx.fill();
+		ctx.restore();
+		if(delay>0) delay--;
+		else growth+=(1-growth) * 0.1;
+	}
+	generation--;
+}
+
 function Branch(size, rotation) {
 	generation++;
 	var sway = 0;
 	var swaySpeed = random(0.02,0.1);
 	var growth = 0;
 	var delay = generation*10;
-	var lum = Math.pow((parseFloat(size)/parseFloat(size_o)),3/4)*100.0;
-	//lum*=0.8;
+	//var lum = Math.pow((parseFloat(size)/parseFloat(size_o)),3/4)*100.0;
+	var lum = (parseFloat(size)/parseFloat(size_o))*100.0;
 	var hue = random(0,360);
 	var _col = 'hsl('+hue+',100%,' + lum + '%)';
 
 	this.children = [];
-	if(size>25) {
-		this.children.push(new Branch(size*random(0.7,0.9), random(0,35)));
-		this.children.push(new Branch(size*random(0.7,0.9), random(0,-35)));
+	if(size>size_m) {
+		this.children.push(new Branch(size*random(0.7,0.9), random(0,deg)));
+		this.children.push(new Branch(size*random(0.7,0.9), random(0,-deg)));
 	}
+	//else if (random(0,2)<1) this.children.push(new Leaf(size*random(0.7,0.9)));
+	else this.children.push(new Leaf(size*random(0.7,0.9)));
 
 	this.render = function(col) {
 		ctx.save();
@@ -68,7 +105,7 @@ function Branch(size, rotation) {
 		grad.addColorStop(1,String(_col));
 		grad.addColorStop(0,String(col));
 		ctx.strokeStyle = grad;
-		hue+=random(0,2);
+		hue+=random(0.5,2);
 		_col = 'hsl('+hue+',100%,' + lum + '%)';
 		ctx.beginPath();
 		ctx.lineWidth = size*0.1*growth;
@@ -77,30 +114,19 @@ function Branch(size, rotation) {
 		ctx.stroke();
 		ctx.translate(0,-size*growth);
 
-		for(var i = 0; i<this.children.length; i++) {
-			this.children[i].render(_col);
-		}
+		for(var i = 0; i<this.children.length; i++) this.children[i].render(_col);
 
 		ctx.restore();
 		sway+=swaySpeed;
 		if(delay>0) delay--;
-		else {
-			growth+=(1-growth) * 0.1;
-
-		}
+		else growth+=(1-growth) * 0.1;
 	}
 	generation--;
-
 }
 
-function random(min, max) {
-	return Math.random()*(max-min) +min;
-
-}
+function random(min, max) { return Math.random()*(max-min) +min; }
 
 
-		</script>
-	</body>
-
-
+</script>
+</body>
 </html>
