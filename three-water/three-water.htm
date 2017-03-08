@@ -33,8 +33,6 @@
 
 
 		<script src="three.js"></script>
-		<!-- <script src="three.js%20webgl%20-%20gpgpu%20-%20water_files/dat.js"></script> -->
-
 		<script src="GPUComputationRenderer.js"></script>
 
 
@@ -218,12 +216,10 @@
 			var waterUniforms;
 			var smoothShader;
 
-			//var simplex = new SimplexNoise();
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 
-			//document.getElementById( 'waterSize' ).innerText = WIDTH + ' x ' + WIDTH;
 
 			function change(n) {
 				location.hash = n;
@@ -232,12 +228,7 @@
 			}
 
 
-			var options = '';
-			for ( var i = 4; i < 10; i++ ) {
-				var j = Math.pow( 2, i );
-				options += '<a href="#" onclick="return change(' + j + ')">' + j + 'x' + j + '</a> ';
-			}
-			//document.getElementById('options').innerHTML = options;
+
 
 			init();
 			animate();

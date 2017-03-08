@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+
+<head>
+    <title>Time Arm</title>
+    <style type="text/css">
+        body {
+            background-color: #111;
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        var canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext('2d');
+        ctx.strokeStyle = "red";
+        ctx.fillStyle = "blue";
+        ctx.lineWidth = 0.25;
+
+        var hr = 200,
+            mr = 150,
+            sr = 100;
+
+        draw();
+
+        function draw() {
+            ctx.save();
+            ctx.clearRect(-canvas.width, -canvas.height, canvas.width, canvas.height);
+            // ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            var d = new Date(),
+                // h = (d.getHours() % 12.0) / 12.0 * Math.PI * 2 + 3 * Math.PI / 2,
+                // m = d.getMinutes() / 60.0 * Math.PI * 2 + 3 * Math.PI / 2,
+                // s = ((d.getSeconds()) / 60.0) * Math.PI * 2 + 3 * Math.PI / 2,
+                h = (d.getSeconds()) / 60.0 * Math.PI * 2 + 3 * Math.PI / 2,
+                m = d.getMilliseconds() / 1000.0 * Math.PI * 2 + 3 * Math.PI / 2,
+                s = ((d.getMilliseconds()) / 100.0) * Math.PI * 2 + 3 * Math.PI / 2,
+                x = canvas.width / 2, //+ hr * Math.cos(h),
+                y = canvas.height / 2; //+ hr * Math.sin(h);
+
+
+            // console.log(h)
+            // console.log(m)
+            // console.log(s)
+            ctx.moveTo(x, y);
+            x += hr * Math.cos(h)
+            y += hr * Math.sin(h)
+            ctx.lineTo(x, y);
+            x += mr * Math.cos(m)
+            y += mr * Math.sin(m)
+            ctx.lineTo(x, y);
+            x += sr * Math.cos(s)
+            y += sr * Math.sin(s)
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            //ctx.closePath();
+            ctx.restore();
+
+            window.requestAnimationFrame(draw);
+        }
+    </script>
+</body>
+
+</html>
