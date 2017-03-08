@@ -4,35 +4,104 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>HTML5 Canvas</title>
+    <!--<script src="../Modernizr/modernizr-2.0.6.js"></script>-->
 
-    <script src="../Modernizr/modernizr-2.0.6.js"></script>
+    <title>TUBES</title>
 
-    <script type="text/javascript">
-        window.addEventListener("load", windowLoadHandler, false);
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
+        
+        h4 {
+            font-family: sans-serif;
+            color: #333333;
+            font-size: 16px;
+        }
+        
+        h3 {
+            font-family: sans-serif;
+            color: #333333;
+        }
+        
+        p {
+            font-family: sans-serif;
+            color: #333333;
+            font-size: 14px;
+        }
+        
+        #caption {
+            position: absolute;
+            width: 1600px;
+            text-align: center;
+            top: 900px;
+            z-index: 1
+        }
+        
+        a {
+            font-family: sans-serif;
+            color: #d15423;
+            text-decoration: none;
+        }
+        
+        canvas {}
+        
+        #cv {
+            position: absolute;
+            top: 10px;
+            z-index: 0;
+        }
+        
+        div {}
+        
+        #container {
+            width: 1600px;
+            height: 900px;
+            margin: auto;
+        }
+    </style>
 
-        //for debug messages while testing code
-        var Debugger = function() {};
-        Debugger.log = function(message) {
-            try {
-                console.log(message);
-            } catch (exception) {
-                return;
+</head>
+
+<body>
+    <div id="container">
+        <canvas id="cv" width="1600px" height="900px">
+        Your browser does not support HTML5 canvas.
+    </canvas>
+        <form>
+            <p id="caption">
+                HTML5 Canvas - Morphing Fractal Curve.
+                <input type="button" , id="btnRegenerate" value="regenerate" />
+                <input type="button" , id="btnExport" value="export image (png)" />
+                <br><a href="http://www.rectangleworld.com">rectangleworld.com</a>
+            </p>
+        </form>
+        <script type="text/javascript">
+            window.addEventListener("load", windowLoadHandler, false);
+
+            //for debug messages while testing code
+            // var Debugger = function() {};
+            // Debugger.log = function(message) {
+            //     try {
+            //         console.log(message);
+            //     } catch (exception) {
+            //         return;
+            //     }
+            // }
+
+            function windowLoadHandler() {
+                return document.getElementById("cv");
             }
-        }
 
-        function windowLoadHandler() {
-            canvasApp();
-        }
+            // function canvasSupport() {
+            //     return Modernizr.canvas;
+            // }
 
-        function canvasSupport() {
-            return Modernizr.canvas;
-        }
-
-        function canvasApp() {
-            if (!canvasSupport()) {
-                return;
-            }
+            // function canvasApp() {
+            //     if (!canvasSupport()) {
+            //         return;
+            //     }
 
             var cv = document.getElementById("cv");
             var ctx = cv.getContext("2d");
@@ -346,81 +415,7 @@
             function regeneratePressed(evt) {
                 startGenerate();
             }
-
-        }
-    </script>
-
-    <title>HTML5 Canvas Generative Art</title>
-
-    <style type="text/css">
-        body {
-            background-color: #ffffff;
-            color: #333333;
-        }
-        
-        h4 {
-            font-family: sans-serif;
-            color: #333333;
-            font-size: 16px;
-        }
-        
-        h3 {
-            font-family: sans-serif;
-            color: #333333;
-        }
-        
-        p {
-            font-family: sans-serif;
-            color: #333333;
-            font-size: 14px;
-        }
-        
-        #caption {
-            position: absolute;
-            width: 1600px;
-            text-align: center;
-            top: 900px;
-            z-index: 1
-        }
-        
-        a {
-            font-family: sans-serif;
-            color: #d15423;
-            text-decoration: none;
-        }
-        
-        canvas {}
-        
-        #cv {
-            position: absolute;
-            top: 10px;
-            z-index: 0;
-        }
-        
-        div {}
-        
-        #container {
-            width: 1600px;
-            height: 900px;
-            margin: auto;
-        }
-    </style>
-
-</head>
-
-<body>
-    <div id="container">
-        <canvas id="cv" width="1600px" height="900px">
-        Your browser does not support HTML5 canvas.
-    </canvas>
-        <form>
-            <p id="caption">
-                HTML5 Canvas - Morphing Fractal Curve.
-                <input type="button" , id="btnRegenerate" value="regenerate" />
-                <input type="button" , id="btnExport" value="export image (png)" />
-                <br><a href="http://www.rectangleworld.com">rectangleworld.com</a>
-            </p>
-        </form>
+        </script>
     </div>
 </body>
 
