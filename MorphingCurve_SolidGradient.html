@@ -135,6 +135,7 @@
             var bgColor, urlColor;
             var TWO_PI = 2 * Math.PI;
             var lineWidth;
+            var theta = Math.PI;
 
             init();
 
@@ -297,9 +298,10 @@
                         ctx.stroke();
                         // ctx.fill();
                         ctx.restore();
-                        ctx.drawImage(cv, -1, 0)
-                            // ctx.globalCompositeOperation = 'multiply'
-                        ctx.fillStyle = 'rgba(255,255,255,0.004)'
+                        // ctx.globalCompositeOperation = 'xor'
+                        ctx.fillStyle = 'rgba(25,25,25,0.004)'
+                        theta += Math.PI / 180 * Math.pow(1, (Math.random() > .5))
+                        ctx.drawImage(cv, Math.cos(theta), Math.sin(theta))
                         ctx.fillRect(0, 0, cv.width, cv.height)
                             // ctx.drawImage(cv, 0, 0, cv.width + 1, cv.height)
 
