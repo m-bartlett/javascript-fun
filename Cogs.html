@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+
+<head>
+    <title>Cogs</title>
+    <style type="text/css">
+        body {
+            background-color: #222;
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        var canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext('2d');
+        var cog = new Cog();
+        draw();
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            cog.render();
+            window.requestAnimationFrame(draw);
+
+        }
+
+        function Cog() {
+            this.x = canvas.width / 2;
+            this.y = canvas.height / 2;
+            this.r = Math.min(canvas.width, canvas.height) / 2 * (Math.random() * 0.9 + 0.1);
+            this.teeth = Math.round(Math.random() * 31 + 5);
+            this.toothSize = this.r / 12;
+            this.r -= this.toothSize
+            this.toothShape = Math.random() * 0.55 + 0.25
+            this.r2 = this.r * 0.8 * (Math.random() * 0.75 + 0.25)
+            this.spokes = 6;
+            this.rotation = 0;
+            this.angularVel = Math.PI / 180;
+            this.teeth2 = 6;
+            this.render = function() {
+                ctx.save();
+                ctx.fillStyle = "white";
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.beginPath();
+                ctx.moveTo(this.r + this.toothSize, 0);
+                for (var i = 1; i <= 360; i++) {
+                    var a = i / 360 * 2 * Math.PI;
+                    var phase = 1 / (2 * Math.PI) * this.teeth * a;
+                    phase -= Math.floor(phase);
+
+                    var toothHeight = 4.0 * Math.abs(phase - 0.5) - 1.0;
+                    var radius = this.r + this.toothSize * Math.min(Math.max(toothHeight / this.toothShape, -1), 1);
+                    ctx.lineTo(radius * Math.cos(a), radius * Math.sin(a))
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.globalCompositeOperation = 'destination-out'
+                ctx.beginPath();
+                ctx.arc(0, 0, this.r2, 0, Math.PI * 2)
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over'
+                ctx.restore();
+                this.rotation += this.angularVel;
+            }
+        }
+    </script>
+</body>
+
+</html>
