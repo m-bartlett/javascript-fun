@@ -14,8 +14,8 @@
             position: absolute;
             text-align: center;
             vertical-align: middle;
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
         }
         
         .contentCentered:before {
@@ -143,6 +143,7 @@
 
             if (this.x > 0 && this.x < canvas.width && this.y > 0 && this.y < canvas.height) {
                 // this.children.push(new Cog(this, omega * (Math.random() * Math.PI / 4) - Math.PI / 8));
+
                 this.children.push(new Cog(this, omega));
             }
 
