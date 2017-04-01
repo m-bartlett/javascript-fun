@@ -69,9 +69,10 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         var ctx = canvas.getContext('2d');
-        var colors = new Array([255, 35, 98], [255, 120, 0], [255, 90, 0], [255, 143, 67]) //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
+        var colors = new Array([255, 35, 98], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]) //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
         var step = 0;
         const cogs = 3
+        var minTeeth = 5;
         var _omega = Math.random() * 2 * Math.PI;
         const cog = new Cog(null, _omega);
         for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
@@ -90,18 +91,18 @@
             grd.addColorStop(0, cs.c1);
             grd.addColorStop(1, cs.c2);
             // grd.addColorStop(1, "rgba" + cs.c2.substring(3, cs.c2.length - 1) + ",0.1)");
-            grd = cs.c2
+            // grd = cs.c2
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             var grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
             grd2.addColorStop(0, 'rgba(0,0,0,1)');
-            grd2.addColorStop(1, 'rgba(0,0,0,0.1)');
+            grd2.addColorStop(1, 'rgba(0,0,0,0.01)');
             cogb.render(grd2, grd);
 
             grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            grd2.addColorStop(0, 'rgba(255,255,255,1)');
-            grd2.addColorStop(1, 'rgba(255,255,255,0.1)');
+            grd2.addColorStop(0, 'rgba(235,235,235,1)');
+            grd2.addColorStop(1, 'rgba(235,235,235,0.01)');
             cog.render(grd2, grd);
 
             grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
@@ -123,12 +124,12 @@
         }
 
         function Cog(parent = null, omega = Math.random() * 2 * Math.PI) {
-            this.teeth = parent ? Math.ceil(Math.random() * 36) + 4 : 36;
+            this.teeth = parent ? Math.ceil(Math.random() * 36) + (minTeeth++) : 36;
             // this.teeth = Math.ceil(Math.random() * (parent ? parent.teeth : 100)) + (!parent ? 5 : 0);
             if (parent) var ratio = parent.teeth / this.teeth;
             // this.r = parent ? parent.r / ratio : Math.min(canvas.width, canvas.height) / 4 * (Math.random() * 0.9 + 0.1);
             this.r = parent ? parent.r / ratio : Math.min(canvas.width, canvas.height) / 2.5;
-            this.toothSize = parent ? parent.toothSize : this.r / 24;
+            this.toothSize = parent ? parent.toothSize : this.r / 30;
             // this.toothSize = this.r / 12 * Math.random() + this.r / 24;
             this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : canvas.width / 2;
             this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : canvas.height / 2;
@@ -178,13 +179,14 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.r2, 0, Math.PI * 2)
                 ctx.closePath()
-                if (!parent) {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'destination-out'
-                    ctx.fill();
-                    ctx.restore();
-                } else ctx.fill();
-                // ctx.stroke();
+                    // if (!parent) {
+                    //     ctx.save();
+                    //     ctx.globalCompositeOperation = 'destination-out'
+                    //     ctx.fill();
+                    //     ctx.restore();
+                    // } else ctx.fill();
+                    // ctx.stroke();
+                ctx.fill();
                 ctx.restore();
 
                 ctx.restore();
