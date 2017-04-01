@@ -79,10 +79,11 @@
             var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
             // var grd = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
             grd.addColorStop(0, cs.c1);
-            grd.addColorStop(1, "rgba" + cs.c2.substring(3, cs.c2.length - 1) + ",0.1)");
+            grd.addColorStop(1, cs.c2);
+            // grd.addColorStop(1, "rgba" + cs.c2.substring(3, cs.c2.length - 1) + ",0.1)");
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            grd.addColorStop(1, cs.c2);
+
             cogb.render(0.9, "black", grd);
             cog.render(0.9, "white", grd);
             window.requestAnimationFrame(draw);
@@ -156,7 +157,7 @@
 
                 this.rotation += this.angularVel;
                 if (alpha > 0.1)
-                    for (c of this.children) c.render(Math.pow(alpha, 2), style, gr);
+                    for (c of this.children) c.render(Math.pow(alpha, 2.5), style, gr);
             }
 
             this.translate = function(x2, y2) {
