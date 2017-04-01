@@ -63,7 +63,7 @@
         var ctx = canvas.getContext('2d');
         var colors = new Array([255, 35, 98], [255, 90, 0], [255, 90, 0], [255, 58, 104], [229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
         var step = 0;
-        const cogs = 5
+        const cogs = 4
         var _omega = Math.random() * 2 * Math.PI;
         const cog = new Cog(null, _omega);
         for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
@@ -84,8 +84,22 @@
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            cogb.render(0.9, "black", grd);
-            cog.render(0.9, "white", grd);
+            var grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            grd2.addColorStop(0, 'rgba(0,0,0,1)');
+            grd2.addColorStop(1, 'rgba(0,0,0,0.1)');
+            cogb.render(grd2, grd);
+
+            grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            grd2.addColorStop(0, 'rgba(255,255,255,1)');
+            grd2.addColorStop(1, 'rgba(255,255,255,0.1)');
+            cog.render(grd2, grd);
+
+            grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            grd.addColorStop(0.5, 'rgba(0,0,0,0)');
+            grd.addColorStop(1, 'rgba(0,0,0,0.5)');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             window.requestAnimationFrame(draw);
         }
 
@@ -110,7 +124,7 @@
             this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : canvas.height / 2;
             // this.toothShape = Math.random() / (parent && this.r > parent.r ? 2 : 1) / (this.teeth < 7 ? 2 : 1)
             this.toothShape = parent ? parent.toothShape : 0.5
-            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.75 + 0.2) : Math.min(canvas.width, canvas.height) / 3;
+            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : Math.min(canvas.width, canvas.height) / 3;
             this.rotation = parent ? Math.PI + Math.PI / this.teeth - ratio * parent.rotation + omega + ratio * omega : 0;
             // this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 270 * Math.random() + Math.PI / 720;
             this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 1440;
@@ -121,11 +135,14 @@
                 this.children.push(new Cog(this, omega));
             }
 
-            this.render = function(alpha = 0.9, style = "white", gr = "white") {
+            this.render = function(style = "white", gr = "white") {
                 ctx.save();
                 ctx.fillStyle = style
-                    // ctx.translate(this.x, this.y);
-                    // ctx.rotate(this.rotation);
+                ctx.lineWidth = 3;
+                ctx.lineJoin = "round";
+                // ctx.strokeStyle = style
+                // ctx.translate(this.x, this.y);
+                // ctx.rotate(this.rotation);
                 ctx.beginPath();
                 const resolution = this.teeth * 8
                 for (var i = 1; i <= resolution; i++) {
@@ -139,10 +156,11 @@
                 }
                 ctx.closePath();
 
-                ctx.save();
-                ctx.globalAlpha = alpha
+                // ctx.save();
+                // ctx.globalAlpha = alpha
                 ctx.fill();
-                ctx.restore()
+                // ctx.stroke();
+                // ctx.restore()
 
                 ctx.save();
                 ctx.fillStyle = gr;
@@ -150,14 +168,19 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.r2, 0, Math.PI * 2)
                 ctx.closePath()
-                ctx.fill();
+                if (!parent) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-out'
+                    ctx.fill();
+                    ctx.restore();
+                } else ctx.fill();
+                // ctx.stroke();
                 ctx.restore();
 
                 ctx.restore();
 
                 this.rotation += this.angularVel;
-                if (alpha > 0.1)
-                    for (c of this.children) c.render(Math.pow(alpha, 2.5), style, gr);
+                for (c of this.children) c.render(style, gr);
             }
 
             this.translate = function(x2, y2) {
