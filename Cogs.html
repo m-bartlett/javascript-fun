@@ -5,48 +5,114 @@
     <style type="text/css">
         body {
             background-color: #222;
-            margin: 0px;
             overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .contentCentered {
+            position: absolute;
+            text-align: center;
+            vertical-align: middle;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .contentCentered:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+        }
+        
+        .contentCentered>* {
+            display: inline-block;
+            vertical-align: middle;
+            border-radius: 5%;
+            width: 40vw;
+            color: #fff;
+            font-family: 'fonty';
+            /*background: #000;*/
+        }
+        
+        p {
+            /*margin: 1em;*/
+            font-size: 1.5em;
+        }
+        
+        @font-face {
+            font-family: 'fonty';
+            src: url('./font.otf');
         }
     </style>
 </head>
 
 <body>
+    <div class="contentCentered">
+        <div>
+            <h1>Michael A. Bartlett</h1>
+            <p><u>Blog</u>  &mdash;  <u>Contact</u>  &mdash;  <u>About Me</u></p>
+        </div>
+    </div>
     <script>
         var canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
+        window.addEventListener('resize', resizeCanvas, false);
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         var ctx = canvas.getContext('2d');
-        const cogs = 5;
-        const _omega = Math.random() * 2 * Math.PI;
+        var colors = new Array([255, 35, 98], [255, 90, 0], [255, 90, 0], [255, 58, 104], [229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
+        var step = 0;
+        const cogs = 5
+        var _omega = Math.random() * 2 * Math.PI;
         const cog = new Cog(null, _omega);
-        for (var i = 1; i < cogs; i++) {
-            cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
-        }
+        for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
+        _omega += (Math.PI * i / cogs) + (cogs % 2 == 0 ? Math.PI / cogs : 0)
+        const cogb = new Cog(null, _omega);
+        cogb.angularVel = cog.angularVel
+        for (var i = 1; i < cogs; i++) cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
+
         draw();
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            cog.render();
+            cs = updateGradient()
+            var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            // var grd = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            grd.addColorStop(0, cs.c1);
+            grd.addColorStop(1, "rgba" + cs.c2.substring(3, cs.c2.length - 1) + ",0.1)");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            grd.addColorStop(1, cs.c2);
+            cogb.render(0.9, "black", grd);
+            cog.render(0.9, "white", grd);
             window.requestAnimationFrame(draw);
+        }
 
+        function resizeCanvas() {
+            var dx = (window.innerWidth - canvas.width) / 2,
+                dy = (window.innerHeight - canvas.height) / 2;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            cog.translate(dx, dy);
+            cogb.translate(dx, dy);
         }
 
         function Cog(parent = null, omega = Math.random() * 2 * Math.PI) {
-            this.teeth = Math.ceil(Math.random() * 50) + 2;
+            this.teeth = parent ? Math.ceil(Math.random() * 50) + 4 : 36;
             // this.teeth = Math.ceil(Math.random() * (parent ? parent.teeth : 100)) + (!parent ? 5 : 0);
             if (parent) var ratio = parent.teeth / this.teeth;
             // this.r = parent ? parent.r / ratio : Math.min(canvas.width, canvas.height) / 4 * (Math.random() * 0.9 + 0.1);
-            this.r = parent ? parent.r / ratio : 350;
-            this.toothSize = parent ? parent.toothSize : this.r / 12 * Math.random() + this.r / 24;
+            this.r = parent ? parent.r / ratio : Math.min(canvas.width, canvas.height) / 2.5;
+            this.toothSize = parent ? parent.toothSize : this.r / 24;
             // this.toothSize = this.r / 12 * Math.random() + this.r / 24;
             this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : canvas.width / 2;
             this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : canvas.height / 2;
-            this.toothShape = Math.random() / (parent && this.r > parent.r ? 2 : 1) / (this.teeth < 7 ? 2 : 1)
-            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.75 + 0.25) : 300;
+            // this.toothShape = Math.random() / (parent && this.r > parent.r ? 2 : 1) / (this.teeth < 7 ? 2 : 1)
+            this.toothShape = parent ? parent.toothShape : 0.5
+            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.75 + 0.2) : Math.min(canvas.width, canvas.height) / 3;
             this.rotation = parent ? Math.PI + Math.PI / this.teeth - ratio * parent.rotation + omega + ratio * omega : 0;
-            this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 270 * Math.random() + Math.PI / 720;
+            // this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 270 * Math.random() + Math.PI / 720;
+            this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 1440;
             this.children = [];
 
             if (this.x > 0 && this.x < canvas.width && this.y > 0 && this.y < canvas.height) {
@@ -54,13 +120,12 @@
                 this.children.push(new Cog(this, omega));
             }
 
-            this.render = function(alpha = 0.9) {
+            this.render = function(alpha = 0.9, style = "white", gr = "white") {
                 ctx.save();
-                ctx.fillStyle = "white"
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
+                ctx.fillStyle = style
+                    // ctx.translate(this.x, this.y);
+                    // ctx.rotate(this.rotation);
                 ctx.beginPath();
-                ctx.moveTo(this.r + this.toothSize, 0);
                 const resolution = this.teeth * 8
                 for (var i = 1; i <= resolution; i++) {
                     var a = i / resolution * 2 * Math.PI;
@@ -69,7 +134,7 @@
 
                     var toothHeight = 4.0 * Math.abs(phase - 0.5) - 1.0;
                     var radius = this.r + this.toothSize * Math.min(Math.max(toothHeight / this.toothShape, -1), 1);
-                    ctx.lineTo(radius * Math.cos(a), radius * Math.sin(a))
+                    ctx.lineTo(this.x + radius * Math.cos(a + this.rotation), this.y + radius * Math.sin(a + this.rotation))
                 }
                 ctx.closePath();
 
@@ -79,9 +144,11 @@
                 ctx.restore()
 
                 ctx.save();
-                ctx.globalCompositeOperation = 'destination-out'
+                ctx.fillStyle = gr;
+                // ctx.globalCompositeOperation = 'destination-out'
                 ctx.beginPath();
-                ctx.arc(0, 0, this.r2, 0, Math.PI * 2)
+                ctx.arc(this.x, this.y, this.r2, 0, Math.PI * 2)
+                ctx.closePath()
                 ctx.fill();
                 ctx.restore();
 
@@ -89,8 +156,51 @@
 
                 this.rotation += this.angularVel;
                 if (alpha > 0.1)
-                    for (c of this.children) c.render(alpha * alpha);
+                    for (c of this.children) c.render(Math.pow(alpha, 2), style, gr);
             }
+
+            this.translate = function(x2, y2) {
+                this.x += x2;
+                this.y += y2;
+                for (c of this.children) c.translate(x2, y2);
+            }
+        }
+
+
+
+        function updateGradient() {
+
+            var c0_0 = colors[0];
+            var c0_1 = colors[1];
+            var c1_0 = colors[2];
+            var c1_1 = colors[3];
+
+            var istep = 1 - step;
+            var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+            var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+            var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+            var color1 = "rgb(" + r1 + "," + g1 + "," + b1 + ")";
+
+            var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+            var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+            var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+            var color2 = "rgb(" + r2 + "," + g2 + "," + b2 + ")";
+
+            // document.getElementsByTagName("BODY")[0].style.background = "-webkit-gradient(linear, left top, right top, from(" + color1 + "), to(" + color2 + "))"
+            // document.getElementsByTagName("BODY")[0].style.background = "-moz-linear-gradient(left, " + color1 + " 0%, " + color2 + " 100%)"
+
+            step += 0.001;
+            if (step >= 1) {
+                step %= 1;
+                colors[0] = colors[1];
+                colors[2] = colors[3];
+                colors[1] = colors[(1 + Math.floor(1 + Math.random() * (colors.length - 1))) % colors.length];
+                colors[3] = colors[(3 + Math.floor(1 + Math.random() * (colors.length - 1))) % colors.length];
+            }
+            return {
+                c1: color1,
+                c2: color2
+            };
         }
     </script>
 </body>
