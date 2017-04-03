@@ -1,8 +1,8 @@
 # javascript-fun
 A repo to hold various experiments in JavaScript
 
-* [Cogs](http://cdn.rawgit.com/bartlettmic/javascript-fun/master/Cogs.html)
-* [Rainbow Trees](http://cdn.rawgit.com/bartlettmic/javascript-fun/master/Rainbow%20Trees.html)
+* [Cogs](http://rawgit.com/bartlettmic/javascript-fun/master/Cogs.html)
+* [Rainbow Trees](http://rawgit.com/bartlettmic/javascript-fun/master/Rainbow%20Trees.html)
 * [Fireworks](http://rawgit.com/bartlettmic/javascript-fun/master/Fireworks/index2.html)
 * [Fireworks (performance intensive)](http://rawgit.com/bartlettmic/javascript-fun/master/Fireworks/index.html)
 * [Gravity lines](http://rawgit.com/bartlettmic/javascript-fun/master/Proto%20Nebula/index2.html)
