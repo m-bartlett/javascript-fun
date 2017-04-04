@@ -81,15 +81,15 @@
         var ctx = canvas.getContext('2d');
         var colors = new Array([255, 35, 98], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]) //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
         var step = 0;
-        const cogs = 0
+        const cogs = 3
         var minTeeth = 5;
         var _omega = Math.random() * 2 * Math.PI;
         const cog = new Cog(null, _omega);
         for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
         _omega += (Math.PI * i / cogs) + (cogs % 2 == 0 ? Math.PI / cogs : 0)
-        const cogb = new Cog(null, _omega);
+        const cogb = new Cog(null, _omega, "black");
         cogb.angularVel = cog.angularVel
-        for (var i = 1; i < cogs; i++) cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
+        for (var i = 1; i < cogs; i++) cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "black"))
         cogb.teeth = 0;
 
         draw();
@@ -105,28 +105,32 @@
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            var grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            grd2.addColorStop(0, 'rgba(0,0,0,1)');
-            grd2.addColorStop(1, 'rgba(0,0,0,0.01)');
-            cogb.render(grd2, grd);
+            // var grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            // grd2.addColorStop(0, 'rgba(0,0,0,1)');
+            // grd2.addColorStop(1, 'rgba(0,0,0,0.01)');
+            cogb.render();
 
-            grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            grd2.addColorStop(0, 'rgba(235,235,235,1)');
-            grd2.addColorStop(1, 'rgba(235,235,235,0.01)');
-            cog.render(grd2, grd);
+            // grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            // grd2.addColorStop(0, 'rgba(235,235,235,1)');
+            // grd2.addColorStop(1, 'rgba(235,235,235,0.01)');
+            cog.render();
 
-            grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            grd.addColorStop(0.5, 'rgba(0,0,0,0)');
-            grd.addColorStop(1, 'rgba(0,0,0,0.5)');
-            ctx.fillStyle = grd;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            // grd.addColorStop(0.5, 'rgba(0,0,0,0)');
+            // grd.addColorStop(1, 'rgba(0,0,0,0.5)');
+            // ctx.fillStyle = grd;
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // window.requestAnimationFrame(draw);
 
             window.requestAnimationFrame(draw);
+
         }
 
         function resizeCanvas() {
-            var dx = (window.innerWidth - canvas.width) / 2,
-                dy = (window.innerHeight - canvas.height) / 2;
+            var dx = (window.innerWidth - canvas.width),
+                // dy = (window.innerHeight - canvas.height);
+                dy = 0;
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             cog.translate(dx, dy);
@@ -138,26 +142,28 @@
             if (parent) var ratio = parent.teeth / this.teeth;
             this.r = parent ? parent.r / ratio : Math.min(canvas.width, canvas.height) / 2.5;
             this.toothSize = parent ? parent.toothSize : this.r / 30;
-            this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : canvas.width / 2;
-            this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : canvas.height / 2;
+            this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : 0
+            this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : 0;
             this.toothShape = parent ? parent.toothShape : 0.5
             this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : Math.min(canvas.width, canvas.height) / 3;
             this.rotation = parent ? Math.PI + Math.PI / this.teeth - ratio * parent.rotation + omega + ratio * omega : 0;
             this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 1440;
             this.children = [];
 
-            // if (this.x > 0 && this.x < canvas.width && this.y > 0 && this.y < canvas.height) this.children.push(new Cog(this, omega));
+            if (this.x > -canvas.width / 2 && this.x < canvas.width / 2 && this.y > -canvas.height / 2 && this.y < canvas.height / 2) this.children.push(new Cog(this, omega, style));
 
             this.cv = document.createElement('canvas');
-            // this.cv.width = this.radius * 2
-            this.cv.width = canvas.width
-                // this.cv.height = this.radius * 2
-            this.cv.height = canvas.height
+            this.cv.width = (this.r + this.toothSize) * 2;
+            // this.cv.width = canvas.width;
+            this.cv.height = (this.r + this.toothSize) * 2;
+            // this.cv.height = canvas.height
             this.ctx = this.cv.getContext('2d');
             this.ctx.fillStyle = style
-            this.ctx.translate(this.cv.width / 2, this.cv.height / 2);
 
             this.ctx.save();
+            this.ctx.translate(this.cv.width / 2, this.cv.height / 2);
+            // this.ctx.translate(this.x, this.x);
+
             const resolution = this.teeth * 8
             for (var i = 1; i <= resolution; i++) {
                 var a = i / resolution * 2 * Math.PI;
@@ -166,7 +172,7 @@
 
                 var toothHeight = 4.0 * Math.abs(phase - 0.5) - 1.0;
                 var radius = this.r + this.toothSize * Math.min(Math.max(toothHeight / this.toothShape, -1), 1);
-                this.ctx.lineTo(radius * Math.cos(a + this.rotation), radius * Math.sin(a + this.rotation))
+                this.ctx.lineTo(radius * Math.cos(a), radius * Math.sin(a))
             }
             this.ctx.closePath();
             this.ctx.fill();
@@ -178,19 +184,18 @@
             this.ctx.fill();
             this.ctx.restore();
 
-
             this.render = function() {
-                // ctx.save();
-                // ctx.translate(canvas.width / 2, canvas.height / 2)
-                this.ctx.rotate(this.angularVel);
-                this.ctx.drawImage(this.cv, 0, 0);
-                // ctx.rotate(this.angularVel);
-                // this.ctx.save();
-                ctx.drawImage(this.cv, 0, 0);
-                // this.ctx.restore();
-                // ctx.restore();
+                var dx = (canvas.width / 2 + this.x),
+                    dy = (canvas.height / 2 + this.y)
+                    // var dx = this.x,
+                    // dy = this.y
+                ctx.save();
+                ctx.translate(dx, dy)
+                ctx.rotate(this.rotation)
+                ctx.translate(-dx, -dy)
 
-                // ctx.restore();
+                ctx.drawImage(this.cv, (canvas.width - this.cv.width) / 2 + this.x, (canvas.height - this.cv.height) / 2 + this.y);
+                ctx.restore();
 
                 this.rotation += this.angularVel;
                 for (c of this.children) c.render();
@@ -226,15 +231,15 @@
             // document.getElementsByTagName("BODY")[0].style.background = "-webkit-gradient(linear, left top, right top, from(" + color1 + "), to(" + color2 + "))"
             // document.getElementsByTagName("BODY")[0].style.background = "-moz-linear-gradient(left, " + color1 + " 0%, " + color2 + " 100%)"
 
-            step += 0.002;
+            step += 0.005;
             if (step >= 1) {
                 step %= 1;
                 colors[0] = colors[1];
                 colors[2] = colors[3];
                 colors[1] = colors[Math.floor(1 + Math.random() * (colors.length - 1))];
                 colors[3] = colors[Math.floor(1 + Math.random() * (colors.length - 1))];
-                console.log(colors[1])
-                console.log(colors[3])
+                // console.log(colors[1])
+                // console.log(colors[3])
             }
             return {
                 c1: color1,
