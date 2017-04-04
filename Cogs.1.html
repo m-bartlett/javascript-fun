@@ -7,11 +7,11 @@
     <style type="text/css">
         * {
             font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
-            font-weight: 100;
+            font-weight: 200;
         }
         
         body {
-            background-color: #000;
+            background-color: #222;
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -35,13 +35,12 @@
         .contentCentered>* {
             display: inline-table;
             vertical-align: middle;
-            border-radius: 5%;
-            width: 20vw;
+            /*border-radius: 10%;*/
+            width: 30vw;
             height: 5vh;
             color: #fff;
             /*font-family: 'fonty';*/
-            /*font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';*/
-            /*background: #000;*/
+            /*background: #222;*/
             height: auto;
         }
         
@@ -87,7 +86,7 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         var ctx = canvas.getContext('2d');
-        var colors = new Array([255, 35, 98], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]) //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
+        var colors = new Array([255, 35, 120], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]) //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
 
 
         // TO-DO:
@@ -100,37 +99,59 @@
         const cogs = 3
         var minTeeth = 5;
         var _omega = Math.random() * 2 * Math.PI;
-        const cog = new Cog(null, _omega);
-        for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
+        const cog = new Cog(null, _omega, "#eee");
+        for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#eee"))
         _omega += (Math.PI * i / cogs) + (cogs % 2 == 0 ? Math.PI / cogs : 0)
-        const cogb = new Cog(null, _omega, "black");
+        const cogb = new Cog(null, _omega, "#222");
         cogb.angularVel = cog.angularVel
-        for (var i = 1; i < cogs; i++) cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "black"))
+        for (var i = 1; i < cogs; i++) cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#222"))
         cogb.teeth = 0;
 
         draw();
 
         function draw() {
             cs = updateGradient()
-            var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+
+            var rx = Math.min(1, canvas.width / canvas.height),
+                ry = Math.min(canvas.height / canvas.width, 1),
+                cx = (canvas.width / 2) / rx,
+                cy = (canvas.height / 2) / ry;
+
+            // var grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, canvas.width);
+            var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
             grd.addColorStop(0, cs.c1);
             grd.addColorStop(1, cs.c2);
+
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            ctx.save();
+            ctx.globalAlpha = 0.75;
             cogb.render();
+            ctx.restore();
 
             cog.render();
 
-            grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            grd.addColorStop(0.5, cs.c1a + "0)");
-            grd.addColorStop(1, cs.c2a + "0.75)");
-            ctx.fillStyle = grd;
+            // grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+
+
             ctx.save();
-            this.ctx.globalCompositeOperation = 'destination-out'
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.setTransform(rx, 0, 0, ry, 0, 0);
+
+            grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height) / 1.5);
+            grd.addColorStop(0.5, cs.c1a + "0)");
+            grd.addColorStop(1, cs.c2a + "1)");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width / rx, canvas.height / ry);
+
+            grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height) / 1.5);
+            grd.addColorStop(0.5, 'rgba(0,0,0,0)');
+            grd.addColorStop(1, 'rgba(0,0,0,0.75)');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width / rx, canvas.height / ry);
+
             ctx.restore();
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
             window.requestAnimationFrame(draw);
@@ -144,8 +165,8 @@
                 dy = 0;
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            cog.translate(dx, dy);
-            cogb.translate(dx, dy);
+            // cog.translate(dx, dy);
+            // cogb.translate(dx, dy);
         }
 
         function Cog(parent = null, omega = Math.random() * 2 * Math.PI, style = "white") {
@@ -153,12 +174,12 @@
             //Create and/or inherit properties for the gear's visualization
             this.teeth = parent ? Math.ceil(Math.random() * 36) + (minTeeth++) : 36;
             if (parent) var ratio = parent.teeth / this.teeth;
-            this.r = parent ? parent.r / ratio : Math.min(canvas.width, canvas.height) / 2.5;
+            this.r = parent ? parent.r / ratio : canvas.width / 5;
             this.toothSize = parent ? parent.toothSize : this.r / 30;
             this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : 0
             this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : 0;
             this.toothShape = parent ? parent.toothShape : 0.5
-            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : Math.min(canvas.width, canvas.height) / 3;
+            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : canvas.width / 6;
             this.rotation = parent ? Math.PI + Math.PI / this.teeth - ratio * parent.rotation + omega + ratio * omega : 0;
             this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 1440;
             this.children = [];
