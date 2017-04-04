@@ -95,47 +95,34 @@
 
         draw();
 
-        var last = new Date;
-        var counter = 0;
-
         function draw() {
             cs = updateGradient()
-                // var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-                // var grd = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                // grd.addColorStop(0, cs.c1);
-                // grd.addColorStop(1, cs.c2);
-                // grd.addColorStop(1, "rgba" + cs.c2.substring(3, cs.c2.length - 1) + ",0.1)");
-                // grd = cs.c2
-                // ctx.fillStyle = grd;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            // var grd = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            grd.addColorStop(0, cs.c1);
+            grd.addColorStop(1, cs.c2);
+            // grd.addColorStop(1, "rgba" + cs.c2.substring(3, cs.c2.length - 1) + ",0.1)");
+            // grd = cs.c2
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // var grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            // grd2.addColorStop(0, 'rgba(0,0,0,1)');
-            // grd2.addColorStop(1, 'rgba(0,0,0,0.01)');
-            cogb.render("black");
+            var grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            grd2.addColorStop(0, 'rgba(0,0,0,1)');
+            grd2.addColorStop(1, 'rgba(0,0,0,0.01)');
+            cogb.render(grd2, grd);
 
-            // grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            // grd2.addColorStop(0, 'rgba(235,235,235,1)');
-            // grd2.addColorStop(1, 'rgba(235,235,235,0.01)');
-            cog.render("white");
+            grd2 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            grd2.addColorStop(0, 'rgba(235,235,235,1)');
+            grd2.addColorStop(1, 'rgba(235,235,235,0.01)');
+            cog.render(grd2, grd);
 
-            // grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-            // grd.addColorStop(0.5, 'rgba(0,0,0,0)');
-            // grd.addColorStop(1, 'rgba(0,0,0,0.5)');
-            // ctx.fillStyle = grd;
-            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+            grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 1024, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
+            grd.addColorStop(0.5, 'rgba(0,0,0,0)');
+            grd.addColorStop(1, 'rgba(0,0,0,0.5)');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            counter++;
-            var _this = new Date;
-            if (_this - last > 1000) {
-                console.log(counter)
-                console.log("")
-                counter = 0;
-                last = _this
-            }
-
-            // window.requestAnimationFrame(draw);
-            setTimeout(draw, 0);
+            window.requestAnimationFrame(draw);
         }
 
         function resizeCanvas() {
@@ -171,7 +158,7 @@
                 this.children.push(new Cog(this, omega));
             }
 
-            this.render = function(style = "white", gr = "rgba(0,0,0,0)") {
+            this.render = function(style = "white", gr = "white") {
                 ctx.save();
                 ctx.fillStyle = style
                 ctx.lineWidth = 3;
@@ -249,15 +236,15 @@
             // document.getElementsByTagName("BODY")[0].style.background = "-webkit-gradient(linear, left top, right top, from(" + color1 + "), to(" + color2 + "))"
             // document.getElementsByTagName("BODY")[0].style.background = "-moz-linear-gradient(left, " + color1 + " 0%, " + color2 + " 100%)"
 
-            step += 0.002;
+            step += 0.001;
             if (step >= 1) {
                 step %= 1;
                 colors[0] = colors[1];
                 colors[2] = colors[3];
                 colors[1] = colors[Math.floor(1 + Math.random() * (colors.length - 1))];
                 colors[3] = colors[Math.floor(1 + Math.random() * (colors.length - 1))];
-                // console.log(colors[1])
-                // console.log(colors[3])
+                console.log(colors[1])
+                console.log(colors[3])
             }
             return {
                 c1: color1,
