@@ -2,7 +2,14 @@
 
 <head>
     <title>Cogs</title>
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-jp.css' rel='stylesheet' type='text/css'>
+
     <style type="text/css">
+        * {
+            font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
+            font-weight: 100;
+        }
+        
         body {
             background-color: #000;
             overflow: hidden;
@@ -32,7 +39,8 @@
             width: 20vw;
             height: 5vh;
             color: #fff;
-            font-family: 'fonty';
+            /*font-family: 'fonty';*/
+            /*font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';*/
             /*background: #000;*/
             height: auto;
         }
@@ -57,11 +65,11 @@
             width: 100%;
             /*align-items: stretch;*/
         }
-        
+        /*        
         @font-face {
             font-family: 'fonty';
             src: url('./font.ttf');
-        }
+        }*/
     </style>
 </head>
 
@@ -81,9 +89,12 @@
         var ctx = canvas.getContext('2d');
         var colors = new Array([255, 35, 98], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]) //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
 
-        // var grdb = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, cog.r, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-        //     grdb.addColorStop(0, 'rgba(0,0,0,1)');
-        //     grdb.addColorStop(1, 'rgba(0,0,0,0.01)');
+
+        // TO-DO:
+        // Fix resize
+        // Make Colors cycle better
+        // Add more varied centers to child cogs
+        // More/sequential color transitions
 
         var step = 0;
         const cogs = 3
