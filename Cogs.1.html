@@ -99,13 +99,13 @@
         const cogs = 3
         var minTeeth = 5;
         var _omega = Math.random() * 2 * Math.PI;
-        const cog = new Cog(null, _omega, "#eee");
-        for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#eee"))
+        const cog = new Cog(null, _omega);
+        for (var i = 1; i < cogs; i++) cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2))
         _omega += (Math.PI * i / cogs) + (cogs % 2 == 0 ? Math.PI / cogs : 0)
         const cogb = new Cog(null, _omega, "#222");
         cogb.angularVel = cog.angularVel
         for (var i = 1; i < cogs; i++) cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#222"))
-        cogb.teeth = 0;
+        cogb.ctx.clearRect(0, 0, cogb.cv.width, cogb.cv.height);
 
         draw();
 
@@ -126,14 +126,10 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.save();
-            ctx.globalAlpha = 0.75;
+            ctx.globalAlpha = 0.85;
             cogb.render();
-            ctx.restore();
-
             cog.render();
-
-            // grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height));
-
+            ctx.restore();
 
             ctx.save();
             ctx.setTransform(rx, 0, 0, ry, 0, 0);
