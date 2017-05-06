@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+
+<head>
+    <title>Nova</title>
+     <style type="text/css">
+        body {
+            background-color: #222;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const _G = 6.674*Math.pow(10,-3.4);
+        var canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        var ctx = canvas.getContext('2d');
+        window.addEventListener('resize', resizeCanvas, false);
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+
+        var g = new galaxy(1000);
+        g.render(ctx);
+
+        function star(id) {
+            this.id = id;     //identifier
+            this.m  = 100;   //mass
+            this.r  = Math.random() * Math.min(canvas.height, canvas.width) / 200
+            this.x  = Math.random() * canvas.width - canvas.width/2;     //x position
+            this.y  = Math.random() * canvas.height - canvas.height/2;      //y position
+            this.dx = (1-Math.random()*2)*Math.log10(_G);     //x velocity
+            this.dy = (1-Math.random()*2)*Math.log10(_G);     //y velocity
+            this.w  = 0;     //angular velocity
+            this.l = 0;      //luminosity
+            this.color = 'red';
+
+            // this.
+
+            this.render = function(c) { 
+                c.beginPath();
+                c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                c.closePath()
+                c.fillStyle = this.color;
+                c.fill();
+            }
+        }
+
+        function galaxy(population) {
+            this.stars = [new star()]     
+            if (population) while (this.stars.length < population) this.stars.push(new star(this.stars.length));            
+            this.stars[0].x = this.stars[0].y = this.stars[0].dx = this.stars[0].dy = 0;
+            this.stars[0].r = Math.min(canvas.height, canvas.width) / 15
+            
+            this.gravitate = function() {
+                for (var i=0; i<this.stars.length; i++) {
+                    for (var j=i+1; j<this.stars.length; j++) {
+
+                        var dist = Math.sqrt(Math.pow(this.stars[j].x-this.stars[i].x,2)+Math.pow(this.stars[j].y-this.stars[i].y,2));
+                        var fx = _G*this.stars[i].r*this.stars[j].r/Math.pow(dist,2)*(this.stars[j].x-this.stars[i].x),
+                            fy = _G*this.stars[i].r*this.stars[j].r/Math.pow(dist,2)*(this.stars[j].y-this.stars[i].y);
+                        this.stars[i].dx += fx / this.stars[i].r;
+                        this.stars[i].dy += fy / this.stars[i].r;
+                        this.stars[j].dx -= fx / this.stars[j].r;
+                        this.stars[j].dy -= fy / this.stars[j].r;
+                    }
+                }
+                // for (var s of this.stars) {
+                for (var i=this.stars.length-1; i > 1; i--) {
+                    // console.log(s.dx)
+                    this.stars[i].x += this.stars[i].dx;
+                    this.stars[i].y += this.stars[i].dy;
+                    if (this.stars[i].x < -canvas.width/2 || this.stars[i].x > canvas.width/2 || this.stars[i].y < -canvas.height/2 || this.stars[i].y > canvas.height/2) {
+                        this.stars.splice(i,1);
+                    }
+                }
+
+            }
+            
+            this.render = function(c) { 
+                c.save();
+                c.clearRect(0,0,canvas.width,canvas.height);
+                c.translate(canvas.width/2,canvas.height/2);
+                this.gravitate();
+                for (var s of this.stars) s.render(c);      
+                c.restore();
+                var self = this;
+                requestAnimationFrame(function() { self.render(c)});
+            }
+        }
+    </script>
+    </body>
+
+    </html>
