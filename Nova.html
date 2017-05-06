@@ -13,26 +13,31 @@
 </head>
 <body>
     <script>
-        const _G = 6.674*Math.pow(10,-2.5);
+        const _G = 6.674*Math.pow(10,-2);
         var canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
         var ctx = canvas.getContext('2d');
         window.addEventListener('resize', resizeCanvas, false);
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        var c = canvas.width > canvas.height ? {max: canvas.width, min: canvas.height} : {max: canvas.height, min: canvas.width}
+        function resizeCanvas() { 
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight; 
+            c = canvas.width > canvas.height ? {max: canvas.width, min: canvas.height} : {max: canvas.height, min: canvas.width}
+        }
         resizeCanvas();
 
         var g = new galaxy(500);
         g.render(ctx);
 
         function star(id) {
-            this.r  = Math.random() * Math.min(canvas.height, canvas.width) / 500
-            this.x  = Math.random() * canvas.width - canvas.width/2;     //x position
-            this.y  = Math.random() * canvas.height - canvas.height/2;      //y position
-            // this.z  = Math.random() * canvas.width - canvas.width/2;      //z position
-            this.dx = (1-Math.random()*2)*Math.log10(_G);     //x velocity
-            // this.dy = 0     //y velocity
-            this.dy = (1-Math.random()*2)*Math.log10(_G);     //y velocity
-            // this.dz = (1-Math.random()*2)*Math.log10(_G);     //z velocity
+            this.r  = Math.random() * c.min / 500
+            cmax = c.max*Math.random();
+            var theta = Math.random()*2*Math.PI;
+            this.x  = cmax/2*Math.cos(theta);     //x position
+            this.y  = cmax/2*Math.sin(theta);     //y position
+            this.dx = Math.cos(theta)*(2+Math.abs(Math.log10(_G)));     //x velocity
+            // this.dy = -Math.sin(theta)*(2+Math.abs(Math.log10(_G)));     //y velocity
+            this.dy = 0     //y velocity
             this.color = 'hsl(' + Math.random()*360 + ',100%,50%)';
 
             this.render = function(c) { 
@@ -43,71 +48,52 @@
                 c.fillStyle = this.color;
                 c.fill();
             }
+
+            this.gravitate = function(b) {
+                var dist = Math.sqrt(Math.pow(this.x-b.x,2) + Math.pow(this.y-b.y,2));
+                var fx = _G*this.r*b.r/Math.pow(dist,2)*(b.x-this.x), fy = _G*this.r*b.r/Math.pow(dist,2)*(b.y-this.y);
+                this.dx += fx / this.r; this.dy += fy / this.r;
+                b.dx -= fx / b.r; b.dy -= fy / b.r;
+                var big = this.r > b.r  ? {r: this.r, s: this, n: b, ret: 1} : {r: b.r, s: b, n: this, ret: -1};
+                if (dist < big.r) { big.s.absorb(big.n); return big.ret; }
+                else return 0;
+            }
+
+            this.absorb = function(b) {
+                this.r += Math.sqrt(b.r/2)
+                this.dx = (this.dx*this.r + b.dx*b.r) / (this.r + b.r)
+                this.dy = (this.dy*this.r + b.dy*b.r) / (this.r + b.r)
+            }
         }
 
-        function galaxy(population) {
+        function galaxy(mass) {
             this.stars = [new star()]     
-            if (population) while (this.stars.length < population) this.stars.push(new star(this.stars.length));            
+            if (mass) while (mass > 0) { this.stars.push(new star(this.stars.length)); mass -= this.stars[this.stars.length-1].r; }
             this.stars[0].x = this.stars[0].y = this.stars[0].z = this.stars[0].dx = this.stars[0].dy = this.stars[0].dz = 0;
             this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
             
             this.gravitate = function() {
                 for (var i=0; i<this.stars.length; i++) {
                     for (var j=i+1; j<this.stars.length; j++) {
-
-                        var dist = Math.sqrt(Math.pow(this.stars[j].x-this.stars[i].x,2)+Math.pow(this.stars[j].y-this.stars[i].y,2));
-                        if (dist < this.stars[i].r + this.stars[j].r) {
-                            if (this.stars[i].r > this.stars[j].r) {
-                                this.stars[i].r += Math.sqrt(this.stars[j].r/2)
-                                this.stars[i].dx = (this.stars[i].dx*this.stars[i].r + this.stars[j].dx*this.stars[j].r)/(this.stars[i].r + this.stars[j].r)                                
-                                this.stars[i].dy = (this.stars[i].dy*this.stars[i].r + this.stars[j].dy*this.stars[j].r)/(this.stars[i].r + this.stars[j].r)
-                                this.stars.splice(j,1);
-                                j--;
-                                continue;
-                            }
-                            else {
-                                this.stars[j].r += Math.sqrt(this.stars[i].r/2)
-                                this.stars[j].dx = (this.stars[i].dx*this.stars[i].r + this.stars[j].dx*this.stars[j].r)/(this.stars[i].r + this.stars[j].r)                                
-                                this.stars[j].dy = (this.stars[i].dy*this.stars[i].r + this.stars[j].dy*this.stars[j].r)/(this.stars[i].r + this.stars[j].r)
-                                this.stars.splice(i,1);
-                                i--;
-                                break;
-                            }
-                        }
-                        // var dist = Math.sqrt(Math.pow(this.stars[j].x-this.stars[i].x,2)+Math.pow(this.stars[j].y-this.stars[i].y,2)+Math.pow(this.stars[j].z-this.stars[i].z,2));
-                        var fx = _G*this.stars[i].r*this.stars[j].r/Math.pow(dist,2)*(this.stars[j].x-this.stars[i].x),
-                            fy = _G*this.stars[i].r*this.stars[j].r/Math.pow(dist,2)*(this.stars[j].y-this.stars[i].y);
-                            //var fz = _G*this.stars[i].r*this.stars[j].r/Math.pow(dist,2)*(this.stars[j].z-this.stars[i].z);
-                        this.stars[i].dx += fx / this.stars[i].r;
-                        this.stars[i].dy += fy / this.stars[i].r;
-                        // this.stars[i].dz += fz / this.stars[i].r;
-                        this.stars[j].dx -= fx / this.stars[j].r;
-                        this.stars[j].dy -= fy / this.stars[j].r;
-                        // this.stars[j].dz += fz / this.stars[j].r;
+                        var ret = this.stars[i].gravitate(this.stars[j]);
+                        if (ret > 0) { this.stars.splice(j,1); j--; continue; }
+                        else if (ret < 0) { this.stars.splice(i,1); i--; break; }
                     }
                 }
-                // for (var s of this.stars) {
                 for (var i=this.stars.length-1; i > 1; i--) {
-                    // console.log(s.dx)
                     this.stars[i].x += this.stars[i].dx;
                     this.stars[i].y += this.stars[i].dy;
-                    // this.stars[i].z += this.stars[i].dz;
-                    // if (this.stars[i].z > canvas.width) this.stars[i].dz *= -1;
-                    // if (this.stars[i].z < 0) this.stars[i].dz *= -1, this.stars[i].dz = 0;
-
-                    // if (this.stars[i].x < -canvas.width/2 || this.stars[i].x > canvas.width/2 || this.stars[i].y < -canvas.height/2 || this.stars[i].y > canvas.height/2) {
-                        // this.stars.splice(i,1);
-                    // }
+                    if (this.stars[i].x < -c.max || this.stars[i].x > c.max || this.stars[i].y < -c.max || this.stars[i].y > c.max) {
+                        this.stars.splice(i,1);
+                    }
                 }
-                // this.stars.sort(compare);
-
             }
             
             this.render = function(c) { 
                 c.save();
                 // c.clearRect(0,0,canvas.width,canvas.height);
                 c.save();
-                c.fillStyle= "rgba(32,32,32,0.1)";
+                c.fillStyle= "rgba(0,0,0,0.05)";
                 c.fillRect(0,0,canvas.width, canvas.height);
                 c.restore();
                 c.translate(canvas.width/2,canvas.height/2);
@@ -118,12 +104,6 @@
                 requestAnimationFrame(function() { self.render(c)});
             }
         }
-
-        // function compare(a,b){
-        //     if (a.z < b.z) return -1;
-        //     else if(b.z < a.z) return 1;
-        //     else return 0;
-        // }
     </script>
     </body>
 
