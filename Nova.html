@@ -4,7 +4,7 @@
     <title>Nova</title>
      <style type="text/css">
         body {
-            background-color: #222;
+            background-color: #000;
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -18,6 +18,8 @@
               _M = 75,
               _L = Math.PI*4*Math.pow(_M,2)*Math.pow(_T,4);
 
+        var _a, _b;
+
         var c, canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
         var ctx = canvas.getContext('2d');
@@ -26,10 +28,14 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight; 
             c = canvas.width > canvas.height ? {max: canvas.width, min: canvas.height} : {max: canvas.height, min: canvas.width}
+            _a = (_T-40000)/Math.log(_M/(c.min/2));
+            _b = Math.exp( (40000*Math.log(_M)-_T*Math.log((c.min/2))) / (_T-40000) );
+            console.log(_a)
+            console.log(_b)
         }
         resizeCanvas();
 
-        var g = new galaxy(1250);
+        var g = new galaxy(1500);
         g.render(ctx);
 
         function star(id) {
@@ -43,15 +49,24 @@
             // this.dx = Math.cos(theta)*(2+Math.abs(Math.log10(_G)));     //x velocity
             // this.dy = -Math.sin(theta)*(2+Math.abs(Math.log10(_G)));     //y velocity
             // this.dy = 0     //y velocity
-            this.color = 'hsl(' + Math.random()*360 + ',100%,50%)';
+            // this.color = 'hsl(' + Math.random()*360 + ',100%,50%)';
+            this.color=blackbody(this.r);
+            
 
             this.render = function(c) { 
                 c.beginPath();
                 c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                // c.arc(this.x, this.y, this.r*Math.pow((this.z+canvas.width/2)/canvas.width,3), 0, Math.PI * 2);
                 c.closePath()
                 c.fillStyle = this.color;
                 c.fill();
+
+                if (this.r > _M) {
+                    c.beginPath();
+                    c.arc(this.x, this.y, this.r+Math.random()*Math.pow(this.r,1/2), 0, Math.PI * 2);
+                    c.closePath()
+                    c.fillStyle = 'rgba(255,255,255,0.2)';
+                    c.fill();
+                }
             }
 
             this.gravitate = function(b) {
@@ -65,43 +80,35 @@
             }
 
             this.absorb = function(b) {
-                this.r += Math.pow(b.r,1/3)
+                this.r += Math.pow(b.r,1/4)
                 this.dx = (this.dx*this.r + b.dx*b.r) / (this.r + b.r)
                 this.dy = (this.dy*this.r + b.dy*b.r) / (this.r + b.r)
+                this.color=blackbody(this.r);
+                console.log(this.color)
             }
-           
         }
 
         function blackbody(m) {
-            var L = function (m) {
-                if (m < 0.43*_M) return 0.23*Math.pow(m/_M,2.3)*_L;
-                if (m < 2*_M) return Math.pow(m/_M,4)*_L;
-                if (m < 20*_M) return 1.5*Math.pow(m/_M,3.5)*_L;
-                return 3200*Math.pow(m/_M,4)*_L;
-            }(m);
-
-            var K = function(m) { return Math.pow(L/(4*Math.PI*Math.pow(m,2)),1/4)}(m);
-
-            console.log(K);            
+            var K = function(m) { 
+                    return Math.max(_a*Math.log(_b*m)/100,0);
+                }(m);
+                    console.log(K);
 
             return "rgba(" + 
                 (function(K){    //R
-                    if (K < 6600) return 255;
-                    if (K < 40000) return parseInt(-58.25*Math.log(0.000001906*K));
-                    return 150;
+                    if (K <= 66) return parseInt((5*K)/2 + 90);
+                    return parseInt(Math.min(Math.max(329.698727446 * Math.pow(K-60,-0.3332047592),0),255));
                 })(K) + "," +
                 
                 (function(K){    //G
-                    if (K < 1000) return 50;                    
-                    if (K < 6600) return parseInt(102*Math.log(K) - 648);
-                    if (K < 40000) return parseInt(-41.63*Math.log(K*Math.pow(10,-6.5)));                    
-                    return 180
+                    if (K <= 66) return parseInt(Math.min(Math.max(99.4708025861 * Math.log(K) - 161.1195681661,0),255)); 
+                    return parseInt(Math.min(Math.max(288.1221695283 * Math.pow(K,-0.0755148492),0),255));
                 })(K) + "," +
                 
                 (function(K){    //B
-                    if (K < 2000) return 0;                    
-                    if (K < 6600) return parseInt(213.58*Math.log(0.0005*K));
-                    return 255
+                    if (K >= 66) return 255;
+                    if (K <= 19) return 0;
+                    return parseInt(Math.min(Math.max(138.5177312231 * Math.log(K-10) - 305.0447927307,0),255)); 
                 })(K) 
                 + ",1)"
         }
@@ -110,8 +117,8 @@
             this.stars = [new star()]     
             if (mass) while (mass > 0) { this.stars.push(new star(this.stars.length)); mass -= this.stars[this.stars.length-1].r; }
             this.stars[0].x = this.stars[0].y = this.stars[0].z = this.stars[0].dx = this.stars[0].dy = this.stars[0].dz = 0;
+            // this.stars[0].r = 500
             this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
-            // this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
             
             this.gravitate = function() {
                 for (var i=0; i<this.stars.length; i++) {
@@ -132,15 +139,17 @@
             
             this.render = function(c) { 
                 c.save();
-                // c.clearRect(0,0,canvas.width,canvas.height);
-                c.save();
-                c.fillStyle= "rgba(0,0,0,0.05)";
-                c.fillRect(0,0,canvas.width, canvas.height);
-                c.restore();
+                c.clearRect(0,0,canvas.width,canvas.height);
+
+                // c.save();
+                // c.fillStyle= "rgba(0,0,0,0.05)";
+                // c.fillRect(0,0,canvas.width, canvas.height);
+                // c.restore();
+
                 c.translate(canvas.width/2,canvas.height/2);
                 this.gravitate();
-                console.log(blackbody(this.stars[0].r))
-                this.stars[0].color = (blackbody(this.stars[0].r));                
+                // console.log(blackbody(this.stars[0].r))
+                // this.stars[0].color = (blackbody(this.stars[0].r));                
                 for (var s of this.stars) s.render(c);      
                 c.restore();
                 var self = this;
