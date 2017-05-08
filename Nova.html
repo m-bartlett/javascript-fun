@@ -13,12 +13,15 @@
 </head>
 <body>
     <script>
-        const _G = 6.674*Math.pow(10,-2);
-        var canvas = document.createElement('canvas');
+        const _G = 6.674*Math.pow(10,-2),
+              _T = 5772,
+              _M = 75,
+              _L = Math.PI*4*Math.pow(_M,2)*Math.pow(_T,4);
+
+        var c, canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
         var ctx = canvas.getContext('2d');
         window.addEventListener('resize', resizeCanvas, false);
-        var c = canvas.width > canvas.height ? {max: canvas.width, min: canvas.height} : {max: canvas.height, min: canvas.width}
         function resizeCanvas() { 
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight; 
@@ -26,18 +29,20 @@
         }
         resizeCanvas();
 
-        var g = new galaxy(500);
+        var g = new galaxy(1250);
         g.render(ctx);
 
         function star(id) {
-            this.r  = Math.random() * c.min / 500
+            this.r  = Math.random() * c.min / 400
             cmax = c.max*Math.random();
             var theta = Math.random()*2*Math.PI;
-            this.x  = cmax/2*Math.cos(theta);     //x position
-            this.y  = cmax/2*Math.sin(theta);     //y position
-            this.dx = Math.cos(theta)*(2+Math.abs(Math.log10(_G)));     //x velocity
+            this.x  = cmax*Math.cos(theta);     //x position
+            this.y  = cmax*Math.sin(theta);     //y position
+            this.dx = (1-2*Math.random())*(2+Math.abs(Math.log10(_G)));     //x velocity
+            this.dy = (1-2*Math.random())*(2+Math.abs(Math.log10(_G)));     //y velocity
+            // this.dx = Math.cos(theta)*(2+Math.abs(Math.log10(_G)));     //x velocity
             // this.dy = -Math.sin(theta)*(2+Math.abs(Math.log10(_G)));     //y velocity
-            this.dy = 0     //y velocity
+            // this.dy = 0     //y velocity
             this.color = 'hsl(' + Math.random()*360 + ',100%,50%)';
 
             this.render = function(c) { 
@@ -51,7 +56,7 @@
 
             this.gravitate = function(b) {
                 var dist = Math.sqrt(Math.pow(this.x-b.x,2) + Math.pow(this.y-b.y,2));
-                var fx = _G*this.r*b.r/Math.pow(dist,2)*(b.x-this.x), fy = _G*this.r*b.r/Math.pow(dist,2)*(b.y-this.y);
+                var fx = _G*this.r*b.r/Math.pow(dist,1.99)*(b.x-this.x), fy = _G*this.r*b.r/Math.pow(dist,1.99)*(b.y-this.y);
                 this.dx += fx / this.r; this.dy += fy / this.r;
                 b.dx -= fx / b.r; b.dy -= fy / b.r;
                 var big = this.r > b.r  ? {r: this.r, s: this, n: b, ret: 1} : {r: b.r, s: b, n: this, ret: -1};
@@ -60,10 +65,45 @@
             }
 
             this.absorb = function(b) {
-                this.r += Math.sqrt(b.r/2)
+                this.r += Math.pow(b.r,1/3)
                 this.dx = (this.dx*this.r + b.dx*b.r) / (this.r + b.r)
                 this.dy = (this.dy*this.r + b.dy*b.r) / (this.r + b.r)
             }
+           
+        }
+
+        function blackbody(m) {
+            var L = function (m) {
+                if (m < 0.43*_M) return 0.23*Math.pow(m/_M,2.3)*_L;
+                if (m < 2*_M) return Math.pow(m/_M,4)*_L;
+                if (m < 20*_M) return 1.5*Math.pow(m/_M,3.5)*_L;
+                return 3200*Math.pow(m/_M,4)*_L;
+            }(m);
+
+            var K = function(m) { return Math.pow(L/(4*Math.PI*Math.pow(m,2)),1/4)}(m);
+
+            console.log(K);            
+
+            return "rgba(" + 
+                (function(K){    //R
+                    if (K < 6600) return 255;
+                    if (K < 40000) return parseInt(-58.25*Math.log(0.000001906*K));
+                    return 150;
+                })(K) + "," +
+                
+                (function(K){    //G
+                    if (K < 1000) return 50;                    
+                    if (K < 6600) return parseInt(102*Math.log(K) - 648);
+                    if (K < 40000) return parseInt(-41.63*Math.log(K*Math.pow(10,-6.5)));                    
+                    return 180
+                })(K) + "," +
+                
+                (function(K){    //B
+                    if (K < 2000) return 0;                    
+                    if (K < 6600) return parseInt(213.58*Math.log(0.0005*K));
+                    return 255
+                })(K) 
+                + ",1)"
         }
 
         function galaxy(mass) {
@@ -71,6 +111,7 @@
             if (mass) while (mass > 0) { this.stars.push(new star(this.stars.length)); mass -= this.stars[this.stars.length-1].r; }
             this.stars[0].x = this.stars[0].y = this.stars[0].z = this.stars[0].dx = this.stars[0].dy = this.stars[0].dz = 0;
             this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
+            // this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
             
             this.gravitate = function() {
                 for (var i=0; i<this.stars.length; i++) {
@@ -98,6 +139,8 @@
                 c.restore();
                 c.translate(canvas.width/2,canvas.height/2);
                 this.gravitate();
+                console.log(blackbody(this.stars[0].r))
+                this.stars[0].color = (blackbody(this.stars[0].r));                
                 for (var s of this.stars) s.render(c);      
                 c.restore();
                 var self = this;
