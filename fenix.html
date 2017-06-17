@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+
+<head>
+    <title>fenix.ai</title>
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-jp.css' rel='stylesheet' type='text/css'>
+
+    <style type="text/css">
+        div {
+            font-family: 'Jura', sans-serif;
+            color: white;
+            font-weight: 200;
+        }
+        
+        body {
+            background-color: #222;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .contentCentered {
+            position: absolute;
+            text-align: center;
+            vertical-align: middle;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .contentCentered:before {
+            content: '';
+            display: inline-table;
+        }
+        
+        .contentCentered>* {
+            display: inline-table;
+            vertical-align: middle;
+            width: 25vw;
+            color: #fff;
+        }
+        
+        h1:before {
+            content: "";
+            display: inline-table;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+        }
+        
+        p {
+            /*display: inline;*/
+            text-align: justify;
+            /*margin: 1em;*/
+            font-size: 1.75em;
+            width: 100%;
+        }
+        
+        p:after {
+            content: "";
+            display: inline-table;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contentCentered">
+        <div>
+            <h1>FENIX.AI</h1>
+            <p>About Pricing Contact</p>
+            <img src="untitled.png" style="height:25vw">
+        </div>
+    </div>
+    <script src="smoke.js.download"></script>
+    <script>
+        var canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        // window.addEventListener('resize', resizeCanvas, false);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext('2d');
+
+        var party = smokemachine(ctx, [100, 100, 100])
+        party.start() // start animating
+
+        // onmousemove = function (e) {
+        // 	var x = e.clientX
+        // 	var y = e.clientY
+        // 	var n = .5
+        // 	var t = Math.floor(Math.random() * 200) + 3800
+        // 	party.addsmoke(x, y, n, t)
+        // }
+
+        setInterval(function() {
+            party.addsmoke(innerWidth / 2, innerHeight, 1)
+        }, 100)
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- saved from url=(0016)http://fenix.ai/ -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="./fenix.ai_files/css" rel="stylesheet">
+    <link rel="stylesheet" href="./fenix.ai_files/style.css">
+    <style type="text/css">
+         :root #content>#right>.dose>.dosesingle,
+         :root #content>#center>.dose>.dosesingle {
+            display: none !important;
+        }
+        
+        div {
+            font-family: 'Jura', sans-serif;
+            color: white;
+        }
+        
+        body {
+            background-color: black;
+            min-height: 90vh;
+        }
+        
+        #phoenix {
+            position: absolute;
+            left: 50%;
+            margin-left: -150px;
+            margin-top: 25px;
+            z-index: 0;
+        }
+        
+        #title {
+            font-size: 120px;
+            left: 50%;
+            position: absolute;
+            margin-left: -225px;
+            top: 350px;
+        }
+        
+        #content {
+            font-size: 24px;
+            left: 50%;
+            position: absolute;
+            margin-left: -400px;
+            top: 350px;
+            width: 800px;
+            border: 2px solid gray;
+            border-radius: 3px;
+            padding: 15px;
+            background-color: black;
+        }
+        
+        #content div {
+            min-height: 15px;
+        }
+        
+        .price-line {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        
+        #menu {
+            font-size: 36px;
+            text-decoration: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: black;
+            z-index: 1;
+        }
+        
+        #menu a {
+            color: white;
+            text-decoration: none;
+            margin: auto;
+            display: block;
+            width: 150px;
+        }
+        
+        #contact {
+            font-size: 36px;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            margin-left: -135px;
+        }
+        
+        .underline {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+
+<body>
+    <img id="phoenix" src="./fenix.ai_files/phoenix.png">
+    <div id="title">FENIX.AI</div>
+    <div id="menu">
+        <a href="http://fenix.ai/about.html">About</a>
+        <a href="http://fenix.ai/pricing.html">Pricing</a>
+    </div>
+    <div id="contact">mcarey@fenix.ai</div>
+    <script src="./smoke.js _ A Small But Good JavaScript Smoke Effect_files/smoke.js.download"></script>
+    <script>
+        var canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        window.addEventListener('resize', resizeCanvas, false);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext('2d');
+
+        var party = smokemachine(ctx, [54, 16.8, 18.2])
+        party.start() // start animating
+
+        // onmousemove = function (e) {
+        // 	var x = e.clientX
+        // 	var y = e.clientY
+        // 	var n = .5
+        // 	var t = Math.floor(Math.random() * 200) + 3800
+        // 	party.addsmoke(x, y, n, t)
+        // }
+
+        setInterval(function() {
+            party.addsmoke(innerWidth / 2, innerHeight, 1)
+        }, 100)
+    </script>
+</body>
+
+</html>
