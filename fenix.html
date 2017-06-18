@@ -2,7 +2,6 @@
 
 <head>
     <title>fenix.ai</title>
-    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-jp.css' rel='stylesheet' type='text/css'>
     <style type="text/css">
         div {
             font-family: 'Jura', sans-serif;
@@ -66,24 +65,29 @@
         <div>
             <h1>FENIX.AI</h1>
             <p>About Pricing Contact</p>
-            <img src=" untitled.png " style=" position: absolute; height:25vw; bottom:0; display: block; ">
+            <img src="logo.png " style=" position: absolute; height:25vw; bottom:2.5em; display: block; ">
         </div>
     </div>
     <script src="smoke.js.download "></script>
     <script>
         var canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
-        // window.addEventListener('resize', resizeCanvas, false);
+        window.addEventListener('resize', resizeCanvas, false);
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         var ctx = canvas.getContext('2d');
 
-        var party = smokemachine(ctx, [100, 100, 100])
+        var party = smokemachine(ctx, [200, 200, 200])
         party.start() // start animating
 
         setInterval(function() {
             party.addsmoke(innerWidth / 2, innerHeight, 1)
         }, 100)
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
     </script>
 </body>
 
