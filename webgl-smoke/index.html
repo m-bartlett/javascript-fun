@@ -3,14 +3,84 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>WebGL Smoke</title>
+    <title>fenix.ai</title>
+    <style type="text/css">
+        div {
+            font-family: 'Jura', sans-serif;
+            color: #ddd;
+            font-weight: 200;
+        }
+        
+        body {
+            background-color: #000;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .contentCentered {
+            position: absolute;
+            text-align: center;
+            vertical-align: middle;
+            height: 20%;
+            width: 100%;
+        }
+        
+        .contentCentered:before {
+            content: '';
+            display: inline-table;
+        }
+        
+        .contentCentered>* {
+            display: inline-table;
+            vertical-align: middle;
+            width: 25vw;
+            color: #fff;
+        }
+        
+        h1:before {
+            content: "";
+            display: inline-table;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+        }
+        
+        p {
+            text-align: justify;
+            font-size: 1.75em;
+            width: 100%;
+        }
+        
+        p:after {
+            content: "";
+            display: inline-table;
+            width: 100%;
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <header class="contentCentered">
+        <div>
+            <h1>FENIX.AI</h1>
+            <p style="margin:0;">About Pricing Contact</p>
+            <img src="logo.png " style=" height:25vw; ">
+        </div>
+    </header>
+
     <script src='three.min.js'></script>
-    <script src='Stats.js'></script>
     <script>
+        window.addEventListener('resize', resizeCam, false);
+
+        function resizeCam() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+        }
+
         var camera, scene, renderer,
             geometry, material, mesh;
 
@@ -18,13 +88,6 @@
         animate();
 
         function init() {
-            stats = new Stats();
-            stats.setMode(0);
-            stats.domElement.style.position = 'absolute';
-            stats.domElement.style.left = '0px';
-            stats.domElement.style.top = '0px';
-            document.body.appendChild(stats.domElement);
-
             clock = new THREE.Clock();
 
             renderer = new THREE.WebGLRenderer();
@@ -38,26 +101,11 @@
 
             geometry = new THREE.CubeGeometry(200, 200, 200);
             material = new THREE.MeshLambertMaterial({
-                color: 0xaa6666,
+                color: 0xffffff,
                 wireframe: false
             });
             mesh = new THREE.Mesh(geometry, material);
-            //scene.add( mesh );
             cubeSineDriver = 0;
-
-            textGeo = new THREE.PlaneGeometry(300, 300);
-            THREE.ImageUtils.crossOrigin = ''; //Need this to pull in crossdomain images from AWS
-            textTexture = THREE.ImageUtils.loadTexture('quickText.png');
-            textMaterial = new THREE.MeshLambertMaterial({
-                color: 0x00ffff,
-                opacity: 1,
-                map: textTexture,
-                transparent: true,
-                blending: THREE.AdditiveBlending
-            })
-            text = new THREE.Mesh(textGeo, textMaterial);
-            text.position.z = 800;
-            scene.add(text);
 
             light = new THREE.DirectionalLight(0xffffff, 0.5);
             light.position.set(-1, 0, 1);
@@ -65,7 +113,7 @@
 
             smokeTexture = THREE.ImageUtils.loadTexture('Smoke-Element.png');
             smokeMaterial = new THREE.MeshLambertMaterial({
-                color: 0x00dddd,
+                color: 0xffffff,
                 map: smokeTexture,
                 transparent: true
             });
@@ -88,12 +136,12 @@
         function animate() {
 
             // note: three.js includes requestAnimationFrame shim
-            stats.begin();
+            // stats.begin();
             delta = clock.getDelta();
             requestAnimationFrame(animate);
             evolveSmoke();
             render();
-            stats.end();
+            // stats.end();
         }
 
         function evolveSmoke() {
@@ -113,6 +161,11 @@
 
         }
     </script>
+
+    <main>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi, tempora voluptatum porro. Harum odio, sapiente dicta, eum quidem porro atque quisquam impedit officia ullam minus, laudantium vel eaque doloribus rem.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi, tempora voluptatum porro. Harum odio, sapiente dicta, eum quidem porro atque quisquam impedit officia ullam minus, laudantium vel eaque doloribus rem.</p>
+    </main>
 </body>
 
 </html>
