@@ -10,7 +10,11 @@
         }
         
         body {
-            background-color: #222;
+            background: #404040;
+            background: -moz-linear-gradient(top, #404040 0%, #202020 40%);
+            background: -webkit-linear-gradient(top, #404040 0%, #202020 40%);
+            background: linear-gradient(to bottom, #404040 0%, #202020 40%);
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#404040', endColorstr='#202020', GradientType=0);
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -68,7 +72,7 @@
             <img src="logo.png " style=" position: absolute; height:25vw; bottom:2.5em; display: block; ">
         </div>
     </div>
-    <script src="smoke.js.download "></script>
+    <script src="smoke.js"></script>
     <script>
         var canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
