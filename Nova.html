@@ -30,8 +30,8 @@
             c = canvas.width > canvas.height ? {max: canvas.width, min: canvas.height} : {max: canvas.height, min: canvas.width}
             _a = (_T-40000)/Math.log(_M/(c.min/2));
             _b = Math.exp( (40000*Math.log(_M)-_T*Math.log((c.min/2))) / (_T-40000) );
-            console.log(_a)
-            console.log(_b)
+            // console.log(_a)
+            // console.log(_b)
         }
         resizeCanvas();
 
@@ -80,11 +80,11 @@
             }
 
             this.absorb = function(b) {
-                this.r += Math.pow(b.r,1/4)
+                this.r += Math.sqrt(b.r/4)
                 this.dx = (this.dx*this.r + b.dx*b.r) / (this.r + b.r)
                 this.dy = (this.dy*this.r + b.dy*b.r) / (this.r + b.r)
                 this.color=blackbody(this.r);
-                console.log(this.color)
+                // console.log(this.color)
             }
         }
 
@@ -92,7 +92,7 @@
             var K = function(m) { 
                     return Math.max(_a*Math.log(_b*m)/100,0);
                 }(m);
-                    console.log(K);
+                    // console.log(K);
 
             return "rgba(" + 
                 (function(K){    //R

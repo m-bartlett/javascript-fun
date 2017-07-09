@@ -2,7 +2,6 @@
 
 <head>
     <title>fenix.ai</title>
-    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-jp.css' rel='stylesheet' type='text/css'>
     <style type="text/css">
         div {
             font-family: 'Jura', sans-serif;
@@ -11,7 +10,17 @@
         }
         
         body {
-            background-color: #222;
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#404040+0,202020+100 */
+            background: #404040;
+            /* Old browsers */
+            background: -moz-linear-gradient(top, #404040 0%, #202020 40%);
+            /* FF3.6-15 */
+            background: -webkit-linear-gradient(top, #404040 0%, #202020 40%);
+            /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom, #404040 0%, #202020 40%);
+            /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#404040', endColorstr='#202020', GradientType=0);
+            /* IE6-9 */
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -66,7 +75,7 @@
         <div>
             <h1>FENIX.AI</h1>
             <p>About Pricing Contact</p>
-            <img src=" untitled.png " style=" position: absolute; height:25vw; bottom:0; display: block; ">
+            <img src="logo.png " style=" position: absolute; height:25vw; bottom:2.5em; display: block; ">
         </div>
     </div>
     <script src="smoke.js.download "></script>
@@ -78,11 +87,11 @@
         canvas.height = window.innerHeight;
         var ctx = canvas.getContext('2d');
 
-        var party = smokemachine(ctx, [100, 100, 100])
-        party.start() // start animating
+        var smoke = smokemachine(ctx, [200, 200, 200])
+        smoke.start() // start animating
 
         setInterval(function() {
-            party.addsmoke(innerWidth / 2, innerHeight, 1)
+            smoke.addsmoke(innerWidth / 2, innerHeight, 1)
         }, 100)
     </script>
 </body>
