@@ -1,3 +1,6 @@
+---
+permalink: /trees/
+---
 <!DOCTYPE HTML>
 <html lang="en">
 <meta charset="utf-8">
@@ -15,7 +18,7 @@
 
 <body>
     <input oninput='sliderUpdate(this)' id="trees" type="range" min="1" max="15" value="1">
-
+    <button onclick='toggleLeaves()'>Toggle Foliage</button>
     <script>
         var canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
@@ -24,9 +27,15 @@
 
         var ctx = canvas.getContext('2d');
         var generation = 0;
-        var size_o = 160;
+        var size_o = 130;
         var size_m = 27;
-        var deg = 35;
+        var deg = 37.5;
+        var leaves = true;
+        function toggleLeaves() { 
+            leaves = !leaves;
+            forest = [];
+            for (var i = 0; i < trees; i++) forest.push(new Branch(size_o * Math.pow(0.85, trees), 0));
+        };
         var trees = 1;
         var rot_total = 0;
         var forest = [];
@@ -60,7 +69,7 @@
 
             this.children = [];
             if (size > size_m) this.children.push(new Branch(size * random(0.7, .9), random(5, deg))), this.children.push(new Branch(size * random(0.7, .9), random(-5, -deg)));
-            else {
+            else if (leaves) {
                 this.children.push(new Leaf(size * random(0.7, 1.5)));
                 if (random(0, 20) > 19) this.children.push(new Fruit(size * random(0.7, 1.5)));
             }

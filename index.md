@@ -1,7 +1,16 @@
 ---
-# You don't need to edit this file, it's empty on purpose.
-# Edit theme's home layout instead if you wanna make some changes
-# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-layout: home
+layout: page
 ---
-All of these projects are included in the [eponymous repository.]()
+All of these projects are included in the [eponymous repository.](https://github.com/bartlettmic/javascript-fun)
+
+* [Cogs (each gear has its own canvas and is only drawn once then copied)](./cogs)
+* [Cogs (each gear is re-rendered with primitives each frame (slower, negligible reduction in aliasing))](./cogsOld)
+* [Rainbow Trees](./trees)
+* [Fireworks](./fw2)
+* [Fireworks with trails (performance intensive)](./fw)
+* [Solar System Simulator (accurate gravity, slower)](./nova)
+* [Solar System Simulator (quick gravity, much faster)](./nova2)
+* [Silk Tube](./tube)
+* [Mouse-attracted lines](./lines)
+* [Mouse-attracted lines (rainbow)](./lines2)
+* [3JS Water Ripples](./3water)

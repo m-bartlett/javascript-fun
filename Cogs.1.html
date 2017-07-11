@@ -1,88 +1,21 @@
+---
+permalink: /cogs
+---
 <!DOCTYPE HTML>
 
 <head>
     <title>Cogs</title>
-    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-jp.css' rel='stylesheet' type='text/css'>
-
     <style type="text/css">
-        * {
-            font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
-            font-weight: 200;
-        }
-        
         body {
             background-color: #222;
             overflow: hidden;
             margin: 0;
             padding: 0;
         }
-        
-        .contentCentered {
-            position: absolute;
-            text-align: center;
-            vertical-align: middle;
-            height: 100%;
-            width: 100%;
-        }
-        
-        .contentCentered:before {
-            content: '';
-            display: inline-table;
-            height: 100%;
-            vertical-align: middle;
-        }
-        
-        .contentCentered>* {
-            display: inline-table;
-            vertical-align: middle;
-            /*border-radius: 10%;*/
-            width: 25vw;
-            height: 5vh;
-            color: #fff;
-            /*font-family: 'fonty';*/
-            /*background: #222;*/
-            height: auto;
-        }
-        
-        h1:before {
-            content: "";
-            display: inline-table;
-            width: 100%;
-        }
-        
-        h1 {
-            font-size: 2.5em;
-        }
-        
-        p {
-            /*display: inline;*/
-            text-align: justify;
-            /*margin: 1em;*/
-            font-size: 1.75em;
-            width: 100%;
-        }
-        
-        p:after {
-            content: "";
-            display: inline-table;
-            width: 100%;
-            /*align-items: stretch;*/
-        }
-        /*        
-        @font-face {
-            font-family: 'fonty';
-            src: url('./font.ttf');
-        }*/
     </style>
 </head>
 
 <body>
-    <div class="contentCentered">
-        <div>
-            <h1>Michael A. Bartlett</h1>
-            <p>About Blog Contact</p>
-        </div>
-    </div>
     <script>
         'use strict';
 
@@ -94,27 +27,19 @@
         var ctx = canvas.getContext('2d');
         var colors = new Array([255, 35, 120], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]); //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
 
-
-        // TO-DO:
-        // Fix resize
-        // Make Colors cycle better
-        // Add more varied centers to child cogs
-        // More/sequential color transitions
-        // Put name and the rest of stuff in their own div?
-
         var step = 0;
-        var cogs = 3;
+        var cogs = 4;
         var minTeeth = 5;
         var _omega = Math.random() * 2 * Math.PI;
-        var cog = new Cog(null, _omega);
+        var cog = new Cog(null, _omega, "#222");
         for (var i = 1; i < cogs; i++) {
-            cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2));
+            cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#222"));
         }
         _omega += Math.PI * i / cogs + (cogs % 2 == 0 ? Math.PI / cogs : 0);
-        var cogb = new Cog(null, _omega, "#222");
+        var cogb = new Cog(null, _omega);
         cogb.angularVel = cog.angularVel;
         for (var i = 1; i < cogs; i++) {
-            cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#222"));
+            cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2));
         }
         cogb.ctx.clearRect(0, 0, cogb.cv.width, cogb.cv.height);
 
@@ -185,12 +110,12 @@
             //Create and/or inherit properties for the gear's visualization
             this.teeth = parent ? Math.ceil(Math.random() * 36) + minTeeth++ : 36;
             if (parent) var ratio = parent.teeth / this.teeth;
-            this.r = parent ? parent.r / ratio : canvas.width / 5;
+            this.r = parent ? parent.r / ratio : canvas.width / 10;
             this.toothSize = parent ? parent.toothSize : this.r / 30;
             this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : 0;
             this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : 0;
             this.toothShape = parent ? parent.toothShape : 0.5;
-            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : canvas.width / 6;
+            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : canvas.width / 12;
             this.rotation = parent ? Math.PI + Math.PI / this.teeth - ratio * parent.rotation + omega + ratio * omega : 0;
             this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 1440;
             this.children = [];

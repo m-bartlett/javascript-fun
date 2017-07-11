@@ -22,7 +22,9 @@ github_username:  bartlettmic
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-minimal
+theme: minima
+# source: ./site
+destination: ./_site
 gems:
   - jekyll-feed
 exclude:
