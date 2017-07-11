@@ -43,7 +43,7 @@
         }
         resizeCanvas();
 
-        var g = new galaxy(1000);
+        var g = new galaxy(2000);
         g.render(ctx);
 
         function star(id) {
@@ -152,19 +152,22 @@
             this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
 
             this.gravitate = function() {
-                for (var i = 0; i < this.stars.length; i++) {
-                    for (var j = i + 1; j < this.stars.length; j++) {
-                        var ret = this.stars[i].gravitate(this.stars[j]);
-                        if (ret > 0) {
-                            this.stars.splice(j, 1);
-                            j--;
-                            continue;
-                        } else if (ret < 0) {
-                            this.stars.splice(i, 1);
-                            i--;
-                            break;
-                        }
+                // for (var i = 0; i < this.stars.length; i++) {
+                for (var i = 1; i < this.stars.length; i++) {
+                    // for (var j = i + 1; j < this.stars.length; j++) {
+                    // var ret = this.stars[i].gravitate(this.stars[j]);
+                    var ret = this.stars[i].gravitate(this.stars[0]);
+                    // if (ret > 0) {
+                    //     this.stars.splice(j, 1);
+                    //     j--;
+                    //     continue;
+                    // } else 
+                    if (ret < 0) {
+                        this.stars.splice(i, 1);
+                        i--;
+                        break;
                     }
+                    // }
                 }
                 for (var i = this.stars.length - 1; i > 1; i--) {
                     this.stars[i].x += this.stars[i].dx;
@@ -198,20 +201,6 @@
                 }, 16.67)
             }
         }
-
-        // window.requestAnimFrame = (function(callback) {
-        // return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-        // function(callback) {
-        // window.setTimeout(callback, 1000 / 20);
-        // };
-        // })();
-
-        // function animate() {
-        // g.render(ctx);
-        //     requestAnimFrame(function() {
-        //         animate();
-        //     });
-        // }
     </script>
 </body>
 
