@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+
+<head>
+    <title>Nova</title>
+    <style type="text/css">
+        body {
+            background-color: #000;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const _G = 6.674 * 2 * Math.pow(10, -2),
+            _T = 5772,
+            _M = 75,
+            _L = Math.PI * 4 * Math.pow(_M, 2) * Math.pow(_T, 4);
+
+        var _a, _b;
+
+        var c, canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        var ctx = canvas.getContext('2d');
+        window.addEventListener('resize', resizeCanvas, false);
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            c = canvas.width > canvas.height ? {
+                max: canvas.width,
+                min: canvas.height
+            } : {
+                max: canvas.height,
+                min: canvas.width
+            }
+            _a = (_T - 40000) / Math.log(_M / (c.min / 2));
+            _b = Math.exp((40000 * Math.log(_M) - _T * Math.log((c.min / 2))) / (_T - 40000));
+            // console.log(_a)
+            // console.log(_b)
+        }
+        resizeCanvas();
+
+        var g = new galaxy(1000);
+        g.render(ctx);
+
+        function star(id) {
+            this.r = Math.random() * c.min / 200
+            cmax = c.max * Math.random();
+            var theta = Math.random() * 2 * Math.PI;
+            this.x = cmax * Math.cos(theta); //x position
+            this.y = cmax * Math.sin(theta); //y position
+            this.dx = (1 - 2 * Math.random()) * (2 + Math.abs(Math.log10(_G))); //x velocity
+            this.dy = (1 - 2 * Math.random()) * (2 + Math.abs(Math.log10(_G))); //y velocity
+            // this.dx = Math.cos(theta)*(2+Math.abs(Math.log10(_G)));     //x velocity
+            // this.dy = -Math.sin(theta)*(2+Math.abs(Math.log10(_G)));     //y velocity
+            // this.dy = 0     //y velocity
+            // this.color = 'hsl(' + Math.random()*360 + ',100%,50%)';
+            this.color = blackbody(this.r);
+
+
+            this.render = function(c) {
+                // if (this.r < 1) return;
+                c.fillStyle = this.color;
+                if (this.r < 5) c.fillRect(this.x - this.r, this.y - this.r, this.r * 2, this.r * 2)
+                else {
+                    c.beginPath();
+                    c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    c.closePath();
+                    c.fill();
+                }
+                if (this.r > _M) {
+                    c.beginPath();
+                    c.arc(this.x, this.y, this.r + Math.random() * Math.pow(this.r, 1 / 2), 0, Math.PI * 2);
+                    c.closePath()
+                    c.fillStyle = 'rgba(255,255,255,0.2)';
+                    c.fill();
+                }
+            }
+
+            this.gravitate = function(b) {
+                var dist = Math.sqrt(Math.pow(this.x - b.x, 2) + Math.pow(this.y - b.y, 2));
+                var fx = _G * this.r * b.r / Math.pow(dist, 1.99) * (b.x - this.x),
+                    fy = _G * this.r * b.r / Math.pow(dist, 1.99) * (b.y - this.y);
+                this.dx += fx / this.r;
+                this.dy += fy / this.r;
+                b.dx -= fx / b.r;
+                b.dy -= fy / b.r;
+                var big = this.r > b.r ? {
+                    r: this.r,
+                    s: this,
+                    n: b,
+                    ret: 1
+                } : {
+                    r: b.r,
+                    s: b,
+                    n: this,
+                    ret: -1
+                };
+                if (dist < big.r) {
+                    big.s.absorb(big.n);
+                    return big.ret;
+                } else return 0;
+            }
+
+            this.absorb = function(b) {
+                var _r = Math.pow(Math.pow(this.r, 1.5) + Math.pow(b.r, 1.5), 1 / 1.5);
+                this.dx = (this.dx * this.r + b.dx * b.r) / (_r)
+                this.dy = (this.dy * this.r + b.dy * b.r) / (_r)
+                this.r = _r;
+                this.color = blackbody(this.r);
+                // console.log(this.color)
+            }
+        }
+
+        function blackbody(m) {
+            var K = function(m) {
+                return Math.max(_a * Math.log(_b * m) / 100, 0);
+            }(m);
+            // console.log(K);
+
+            return "rgba(" +
+                (function(K) { //R
+                    if (K <= 66) return parseInt((5 * K) / 2 + 140);
+                    return parseInt(Math.min(Math.max(329.698727446 * Math.pow(K - 60, -0.3332047592), 0), 255));
+                })(K) + "," +
+
+                (function(K) { //G
+                    if (K <= 66) return parseInt(Math.min(Math.max(99.4708025861 * Math.log(K) - 161.1195681661, 0), 255));
+                    return parseInt(Math.min(Math.max(288.1221695283 * Math.pow(K, -0.0755148492), 0), 255));
+                })(K) + "," +
+
+                (function(K) { //B
+                    if (K >= 66) return 255;
+                    if (K <= 22) return 0;
+                    return parseInt(Math.min(Math.max(138.5177312231 * Math.log(K - 10) - 305.0447927307, 0), 255));
+                })(K)
+            +",1)"
+        }
+
+        function galaxy(mass) {
+            this.stars = [new star()]
+            if (mass)
+                while (mass > 0) {
+                this.stars.push(new star(this.stars.length));
+                mass -= this.stars[this.stars.length - 1].r;
+            }
+            this.stars[0].x = this.stars[0].y = this.stars[0].z = this.stars[0].dx = this.stars[0].dy = this.stars[0].dz = 0;
+            // this.stars[0].r = 500
+            this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
+
+            this.gravitate = function() {
+                for (var i = 0; i < this.stars.length; i++) {
+                    for (var j = i + 1; j < this.stars.length; j++) {
+                        var ret = this.stars[i].gravitate(this.stars[j]);
+                        if (ret > 0) {
+                            this.stars.splice(j, 1);
+                            j--;
+                            continue;
+                        } else if (ret < 0) {
+                            this.stars.splice(i, 1);
+                            i--;
+                            break;
+                        }
+                    }
+                }
+                for (var i = this.stars.length - 1; i > 1; i--) {
+                    this.stars[i].x += this.stars[i].dx;
+                    this.stars[i].y += this.stars[i].dy;
+                    if (this.stars[i].x < -c.max || this.stars[i].x > c.max || this.stars[i].y < -c.max || this.stars[i].y > c.max) {
+                        this.stars.splice(i, 1);
+                    }
+                }
+            }
+
+            this.render = function(c) {
+                c.save();
+                c.clearRect(0, 0, canvas.width, canvas.height);
+
+                // c.save();
+                // c.fillStyle= "rgba(0,0,0,0.05)";
+                // c.fillRect(0,0,canvas.width, canvas.height);
+                // c.restore();
+
+                c.translate(canvas.width / 2, canvas.height / 2);
+                this.gravitate();
+                // console.log(blackbody(this.stars[0].r))
+                // this.stars[0].color = (blackbody(this.stars[0].r));                
+                for (var s of this.stars) s.render(c);
+                c.restore();
+                var self = this;
+                setTimeout(function() {
+                    requestAnimationFrame(function() {
+                        self.render(c)
+                    })
+                }, 16.67)
+            }
+        }
+
+        // window.requestAnimFrame = (function(callback) {
+        // return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        // function(callback) {
+        // window.setTimeout(callback, 1000 / 20);
+        // };
+        // })();
+
+        // function animate() {
+        // g.render(ctx);
+        //     requestAnimFrame(function() {
+        //         animate();
+        //     });
+        // }
+    </script>
+</body>
+
+</html>

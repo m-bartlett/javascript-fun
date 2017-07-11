@@ -1,0 +1,341 @@
+<!DOCTYPE HTML>
+
+<head>
+    <title>Cogs</title>
+    <link href='https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-jp.css' rel='stylesheet' type='text/css'>
+
+    <style type="text/css">
+        * {
+            font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
+            font-weight: 200;
+        }
+        
+        body {
+            background-color: #222;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .contentCentered {
+            position: absolute;
+            text-align: center;
+            vertical-align: middle;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .contentCentered:before {
+            content: '';
+            display: inline-table;
+            height: 100%;
+            vertical-align: middle;
+        }
+        
+        .contentCentered>* {
+            display: inline-table;
+            vertical-align: middle;
+            /*border-radius: 10%;*/
+            width: 25vw;
+            height: 5vh;
+            color: #fff;
+            /*font-family: 'fonty';*/
+            /*background: #222;*/
+            height: auto;
+        }
+        
+        h1:before {
+            content: "";
+            display: inline-table;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+        }
+        
+        p {
+            /*display: inline;*/
+            text-align: justify;
+            /*margin: 1em;*/
+            font-size: 1.75em;
+            width: 100%;
+        }
+        
+        p:after {
+            content: "";
+            display: inline-table;
+            width: 100%;
+            /*align-items: stretch;*/
+        }
+        /*        
+        @font-face {
+            font-family: 'fonty';
+            src: url('./font.ttf');
+        }*/
+    </style>
+</head>
+
+<body>
+    <div class="contentCentered">
+        <div>
+            <h1>Michael A. Bartlett</h1>
+            <p>About Blog Contact</p>
+        </div>
+    </div>
+    <script>
+        'use strict';
+
+        var canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        window.addEventListener('resize', resizeCanvas, false);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext('2d');
+        var colors = new Array([255, 35, 120], [255, 120, 0], [255, 100, 33], [255, 90, 0], [255, 143, 33]); //[229, 71, 71], [234, 18, 65]) //, [51, 85, 213], [45, 175, 230]);
+
+
+        // TO-DO:
+        // Fix resize
+        // Make Colors cycle better
+        // Add more varied centers to child cogs
+        // More/sequential color transitions
+        // Put name and the rest of stuff in their own div?
+
+        var step = 0;
+        var cogs = 3;
+        var minTeeth = 5;
+        var _omega = Math.random() * 2 * Math.PI;
+        var cog = new Cog(null, _omega);
+        for (var i = 1; i < cogs; i++) {
+            cog.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2));
+        }
+        _omega += Math.PI * i / cogs + (cogs % 2 == 0 ? Math.PI / cogs : 0);
+        var cogb = new Cog(null, _omega, "#222");
+        cogb.angularVel = cog.angularVel;
+        for (var i = 1; i < cogs; i++) {
+            cogb.children.push(new Cog(cog, _omega + i / cogs * Math.PI * 2, "#222"));
+        }
+        cogb.ctx.clearRect(0, 0, cogb.cv.width, cogb.cv.height);
+
+        draw();
+
+        function draw() {
+            var cs = updateGradient();
+
+            var rx = Math.min(1, canvas.width / canvas.height),
+                ry = Math.min(canvas.height / canvas.width, 1),
+                cx = canvas.width / 2 / rx,
+                cy = canvas.height / 2 / ry;
+
+            // var grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, canvas.width);
+            var grd = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
+            grd.addColorStop(0, cs.c1);
+            grd.addColorStop(1, cs.c2);
+
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.globalAlpha = 0.85;
+            cogb.render();
+            cog.render();
+            ctx.restore();
+
+            ctx.save();
+            ctx.setTransform(rx, 0, 0, ry, 0, 0);
+
+            grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height) / 1.5);
+            grd.addColorStop(0.5, cs.c1a + "0)");
+            grd.addColorStop(1, cs.c2a + "1)");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width / rx, canvas.height / ry);
+
+            grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height) / 1.5);
+            grd.addColorStop(0.5, 'rgba(0,0,0,0)');
+            grd.addColorStop(1, 'rgba(0,0,0,0.75)');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width / rx, canvas.height / ry);
+
+            ctx.restore();
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+            window.requestAnimationFrame(draw);
+            // setTimeout(draw, 0);
+        }
+
+        function resizeCanvas() {
+            var dx = window.innerWidth - canvas.width,
+
+                // dy = (window.innerHeight - canvas.height);
+                dy = 0;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // cog.translate(dx, dy);
+            // cogb.translate(dx, dy);
+        }
+
+        function Cog() {
+            var parent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+            var omega = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.random() * 2 * Math.PI;
+            var style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "white";
+
+
+            //Create and/or inherit properties for the gear's visualization
+            this.teeth = parent ? Math.ceil(Math.random() * 36) + minTeeth++ : 36;
+            if (parent) var ratio = parent.teeth / this.teeth;
+            this.r = parent ? parent.r / ratio : canvas.width / 5;
+            this.toothSize = parent ? parent.toothSize : this.r / 30;
+            this.x = parent ? parent.x + (parent.r + this.r) * Math.cos(omega) : 0;
+            this.y = parent ? parent.y + (parent.r + this.r) * Math.sin(omega) : 0;
+            this.toothShape = parent ? parent.toothShape : 0.5;
+            this.r2 = parent ? Math.abs(this.r - this.toothSize) * (Math.random() * 0.4 + 0.5) : canvas.width / 6;
+            this.rotation = parent ? Math.PI + Math.PI / this.teeth - ratio * parent.rotation + omega + ratio * omega : 0;
+            this.angularVel = parent ? parent.angularVel * -ratio : Math.PI / 1440;
+            this.children = [];
+
+            //Create adjacent gears if this one is still on the screen
+            if (this.x > -canvas.width / 2 && this.x < canvas.width / 2 && this.y > -canvas.height / 2 && this.y < canvas.height / 2) this.children.push(new Cog(this, omega, style));
+
+            //Each gear has its own canvas, so we only have to draw it one time and copy just the pixels each frame
+            this.cv = document.createElement('canvas');
+            this.cv.width = (this.r + this.toothSize) * 2;
+            this.cv.height = (this.r + this.toothSize) * 2;
+            this.ctx = this.cv.getContext('2d');
+            this.ctx.fillStyle = style;
+
+            //Draw the gear to its respective canvas, concentric to the center of its canvas
+            this.ctx.save();
+            this.ctx.translate(this.cv.width / 2, this.cv.height / 2);
+
+            var resolution = this.teeth * 8;
+            for (var i = 1; i <= resolution; i++) {
+                var a = i / resolution * 2 * Math.PI;
+                var phase = 1 / (2 * Math.PI) * this.teeth * a;
+                phase -= Math.floor(phase);
+
+                var toothHeight = 4.0 * Math.abs(phase - 0.5) - 1.0;
+                var radius = this.r + this.toothSize * Math.min(Math.max(toothHeight / this.toothShape, -1), 1);
+                this.ctx.lineTo(radius * Math.cos(a), radius * Math.sin(a));
+            }
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            // Create the hole in the middle
+            this.ctx.globalCompositeOperation = 'destination-out';
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, this.r2, 0, Math.PI * 2);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.restore();
+
+            //This is the function that copies it to the canvas that's actually displayed
+            this.render = function() {
+                var dx = canvas.width / 2 + this.x,
+                    dy = canvas.height / 2 + this.y;
+                ctx.save();
+                ctx.translate(dx, dy);
+                ctx.rotate(this.rotation);
+                ctx.translate(-dx, -dy);
+
+                ctx.drawImage(this.cv, (canvas.width - this.cv.width) / 2 + this.x, (canvas.height - this.cv.height) / 2 + this.y);
+                ctx.restore();
+
+                this.rotation += this.angularVel;
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = this.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var c = _step.value;
+                        c.render();
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            };
+
+            this.translate = function(x2, y2) {
+                this.x += x2;
+                this.y += y2;
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = this.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var c = _step2.value;
+                        c.translate(x2, y2);
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+            };
+        }
+
+        function updateGradient() {
+
+            var c0_0 = colors[0];
+            var c0_1 = colors[1];
+            var c1_0 = colors[2];
+            var c1_1 = colors[3];
+
+            var istep = 1 - step;
+            var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+            var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+            var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+            var color1 = "rgb(" + r1 + "," + g1 + "," + b1 + ")";
+
+            var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+            var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+            var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+            var color2 = "rgb(" + r2 + "," + g2 + "," + b2 + ")";
+
+            // document.getElementsByTagName("BODY")[0].style.background = "-webkit-gradient(linear, left top, right top, from(" + color1 + "), to(" + color2 + "))"
+            // document.getElementsByTagName("BODY")[0].style.background = "-moz-linear-gradient(left, " + color1 + " 0%, " + color2 + " 100%)"
+
+            step += 0.001;
+            if (step >= 1) {
+                step %= 1;
+                colors[0] = colors[1];
+                colors[2] = colors[3];
+                colors[1] = colors[Math.floor(1 + Math.random() * (colors.length - 1))];
+                colors[3] = colors[Math.floor(1 + Math.random() * (colors.length - 1))];
+                // console.log(colors[1])
+                // console.log(colors[3])
+            }
+            return {
+                c1: color1,
+                c2: color2,
+                c1a: "rgba(" + r1 + "," + g1 + "," + b1 + ",", //)
+                c2a: "rgba(" + r2 + "," + g2 + "," + b2 + "," //)
+            };
+        }
+    </script>
+</body>
+
+</html>
