@@ -10,6 +10,8 @@ All of these projects are included in the [eponymous repository.](https://github
 * [Fireworks with trails (performance intensive)](./fw)
 * [Solar System Simulator (accurate gravity, slower)](./nova)
 * [Solar System Simulator (quick gravity, much faster)](./nova2)
+* [Smoke 2D](./fenix2d)
+* [Smoke 3D](./fenix3d)
 * [Silk Tube](./tube)
 * [Mouse-attracted lines](./lines)
 * [Mouse-attracted lines (rainbow)](./lines2)

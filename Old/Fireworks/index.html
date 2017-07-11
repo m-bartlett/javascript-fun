@@ -1,5 +1,5 @@
 ---
-permalink: /fw2/
+permalink: /fw/
 ---
 <!DOCTYPE HTML>
 <html>
@@ -7,7 +7,7 @@ permalink: /fw2/
 <head>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <meta charset="utf-8">
-    <title>Fireworks!</title>
+    <title>4th of July!</title>
     <style>
         body {
             margin: 0px;
@@ -15,7 +15,8 @@ permalink: /fw2/
         }
         
         canvas {
-            background-image: url("/Fireworks/memes.jpg");
+            background-image: url("/Old/Fireworks/memes.jpg");
+            background-size: cover
         }
     </style>
 </head>
@@ -34,7 +35,7 @@ permalink: /fw2/
             context = canvas.getContext('2d'),
             particles = [],
             rockets = [],
-            MAX_PARTICLES = 400,
+            MAX_PARTICLES = 100,
             colorCode = 0;
 
         // init
@@ -42,7 +43,7 @@ permalink: /fw2/
             document.body.appendChild(canvas);
             canvas.width = SCREEN_WIDTH;
             canvas.height = SCREEN_HEIGHT;
-            setInterval(launch, 400);
+            setInterval(launch, 500);
             setInterval(loop, 1000 / 50);
         });
 
@@ -63,11 +64,15 @@ permalink: /fw2/
 
 
         function launchFrom(x) {
-            if (particles.length <= 40 || rockets.length < 2) context.clearRect(0, 0, canvas.width, canvas.height);
+            if (particles.length <= 40 || rockets.length < 2) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                if (rockets[0]) rockets[0].explode();
+            }
             if (rockets.length < 10) {
                 //context.clearRect(0, 0, canvas.width, canvas.height);
                 var rocket = new Rocket(x);
-                rocket.explosionColor = Math.floor(Math.random() * 360 / 10) * 10;
+                //rocket.explosionColor = Math.floor(Math.random() * 360 / 10) * 10;
+                rocket.explosionColor = Math.random() * 360;
                 rocket.vel.y = Math.random() * -3 - 4;
                 rocket.vel.x = Math.random() * 6 - 3;
                 rocket.size = 8;
@@ -79,7 +84,7 @@ permalink: /fw2/
 
         function loop() {
             // update screen size
-            context.clearRect(0, 0, canvas.width, canvas.height);
+
             if (SCREEN_WIDTH != window.innerWidth) {
                 canvas.width = SCREEN_WIDTH = window.innerWidth;
             }
@@ -87,13 +92,13 @@ permalink: /fw2/
                 canvas.height = SCREEN_HEIGHT = window.innerHeight;
             }
 
-            // clear canvas
-            //context.save();
-            //context.globalAlpha = 0.05;
-            //context.globalCompositeOperation='destination-out';
-            //context.fillStyle= '#FFF';
-            //context.fillRect(0,0,canvas.width, canvas.height);      			
-            //context.restore();
+            // fade canvas
+            context.save();
+            context.globalAlpha = 0.15;
+            context.globalCompositeOperation = 'destination-out';
+            context.fillStyle = '#FFF';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.restore();
 
 
             var existingRockets = [];
@@ -116,7 +121,7 @@ permalink: /fw2/
                             - close to the mouse
                             - 1% chance of random explosion
                             */
-                if (rockets[i].pos.y < SCREEN_HEIGHT / 5 || rockets[i].vel.y >= 0 || distance < 50 || randomChance) {
+                if (rockets[i].pos.y < SCREEN_HEIGHT / 5 || rockets[i].vel.y >= 0 || distance < 30 || randomChance) {
                     rockets[i].explode();
                 } else {
                     existingRockets.push(rockets[i]);
@@ -139,11 +144,7 @@ permalink: /fw2/
             }
 
             // update array with existing particles - old particles should be garbage collected
-            particles = existingParticles;
-
-            while (particles.length > MAX_PARTICLES) {
-                particles.shift();
-            }
+            particles = existingParticles.slice(-1 * MAX_PARTICLES);
         }
 
         function Particle(pos) {
@@ -203,7 +204,7 @@ permalink: /fw2/
             var gradient = c.createRadialGradient(x, y, 0.1, x, y, r);
             gradient.addColorStop(0.1, "rgba(255,255,255," + this.alpha + ")");
             gradient.addColorStop(0.8, "hsla(" + this.color + ", 100%, 50%, " + this.alpha + ")");
-            gradient.addColorStop(1, "hsla(" + this.color + ", 100%, 50%, 0.1)");
+            gradient.addColorStop(1, "hsla(" + this.color + ", 100%, 75%, 0.1)");
 
             c.fillStyle = gradient;
 
@@ -232,7 +233,8 @@ permalink: /fw2/
         Rocket.prototype.constructor = Rocket;
 
         Rocket.prototype.explode = function() {
-            var count = Math.random() * 10 + 80;
+            //var count = Math.random() * MAX_PARTICLES;
+            var count = Math.random() * MAX_PARTICLES / 3 + MAX_PARTICLES / 3;
 
             for (var i = 0; i < count; i++) {
                 var particle = new Particle(this.pos);
@@ -271,8 +273,8 @@ permalink: /fw2/
                 r = this.size / 5;
 
             var gradient = c.createRadialGradient(x, y, 0.1, x, y, r);
-            gradient.addColorStop(0.1, "rgba(255, 255, 255 ," + this.alpha + ")");
-            gradient.addColorStop(1, "rgba(0, 0, 0, " + this.alpha + ")");
+            gradient.addColorStop(0.1, "rgba(255, 255, 255 ," + 1 + ")");
+            gradient.addColorStop(1, "rgba(0, 0, 0, " + 1 + ")");
 
             c.fillStyle = gradient;
 

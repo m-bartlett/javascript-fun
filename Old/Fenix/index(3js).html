@@ -1,3 +1,6 @@
+---
+permalink: /fenix3d/
+---
 <!DOCTYPE html>
 <html>
 
@@ -68,11 +71,11 @@
         <div>
             <h1>FENIX.AI</h1>
             <p style="margin:0;">About Pricing Contact</p>
-            <img src="logo.png " style=" height:25vw; ">
+            <img src="/Old/Fenix/logo.png " style=" height:25vw; ">
         </div>
     </header>
 
-    <script src='three.min.js'></script>
+    <script src='/Old/Fenix/three.min.js'></script>
     <script>
         window.addEventListener('resize', resizeCam, false);
 
@@ -111,7 +114,7 @@
             light.position.set(-1, 0, 1);
             scene.add(light);
 
-            smokeTexture = THREE.ImageUtils.loadTexture('Smoke-Element.png');
+            smokeTexture = THREE.ImageUtils.loadTexture('/Old/Fenix/Smoke-Element.png');
             smokeMaterial = new THREE.MeshLambertMaterial({
                 color: 0xffffff,
                 map: smokeTexture,
