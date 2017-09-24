@@ -148,17 +148,17 @@
                     if (K >= 66) return 255;
                     if (K <= 22) return 0;
                     return parseInt(Math.min(Math.max(138.5177312231 * Math.log(K - 10) - 305.0447927307, 0), 255));
-                })(K)
-            +",1)"
+                })(K) +
+                ",1)"
         }
 
         function galaxy(mass) {
             this.stars = [];
             if (mass)
                 while (mass > 0) {
-                this.stars.push(new star(this.stars.length));
-                mass -= this.stars[this.stars.length - 1].r;
-            }
+                    this.stars.push(new star(this.stars.length));
+                    mass -= this.stars[this.stars.length - 1].r;
+                }
             this.stars[0].x = this.stars[0].y = this.stars[0].z = this.stars[0].dx = this.stars[0].dy = this.stars[0].dz = 0;
             // this.stars[0].r = 500
             this.stars[0].r = Math.min(canvas.height, canvas.width) / 120
@@ -176,22 +176,25 @@
                 }
 
                 //Collision algorithm
-                // var sortx = this.stars.slice().sort(function(a, b) { return a.x < b.x })
-                var sortx = new Array(this.stars.length);
-                for (var i = 0; i < this.stars.length; i++) sortx[i] = {
-                    id: i,
-                    x: this.stars[i].x,
-                    y: this.stars[i].y,
-                    r: this.stars[i].r
-                }
-                sortx.sort(function(a, b) {
-                    return a.x < b.x
-                });
+                var sortx = this.stars.slice().sort(function(a, b) {
+                        return a.x < b.x
+                    })
+                    // var sortx = new Array(this.stars.length);
+                    // for (var i = 0; i < this.stars.length; i++) sortx[i] = {
+                    //     id: i,
+                    //     x: this.stars[i].x,
+                    //     y: this.stars[i].y,
+                    //     r: this.stars[i].r
+                    // }
+                    // sortx.sort(function(a, b) {
+                    //     return a.x < b.x
+                    // });
 
                 for (var i = 0; i + 1 < sortx.length; i++) {
-                    for (var k = 1; k < 10; k++) {
+                    // for (var k = 1; k < 2; k++) {
                         for (var j = 0; j < 2; j++) {
-                            const dir = Math.pow(-1, j) * k;
+                            // const dir = Math.pow(-1, j) * k;
+                            const dir = Math.pow(-1, j);
                             if (!(sortx[i + dir]) || sortx[i + dir].purge) continue;
                             var dist = Math.hypot(sortx[i].x - sortx[i + dir].x, sortx[i].y - sortx[i + dir].y)
                             var big = sortx[i].r > sortx[i + dir].r ? {
@@ -209,14 +212,11 @@
                                 big.s.absorb(big.n);
                             }
                         }
-                    }
+                    // }
                 }
 
                 //Delete marked stars
-                this.stars = this.stars.filter(function(s) {
-                    return !(s.purge)
-                })
-
+                this.stars = this.stars.filter(function(s) { return !(s.purge) })
             }
 
             this.render = function(c) {
@@ -242,20 +242,6 @@
                 }, 16.67)
             }
         }
-
-        // window.requestAnimFrame = (function(callback) {
-        // return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-        // function(callback) {
-        // window.setTimeout(callback, 1000 / 20);
-        // };
-        // })();
-
-        // function animate() {
-        // g.render(ctx);
-        //     requestAnimFrame(function() {
-        //         animate();
-        //     });
-        // }
     </script>
 </body>
 
