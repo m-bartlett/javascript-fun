@@ -18,9 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var pi = Math.PI;
 
-    var cameraX = 0;
-    var cameraY = -20;
-    var cameraZ = -150;
+    var _tree = {};
+    var _splits = 3;
+    var _depth = 8;
+    
+    var cameraX = Math.sin(pi/_splits)*55;
+    var cameraZ = Math.cos(pi/_splits)*55;
+    var cameraY = -10;
     var pitch = 0;
     var yaw = 0;
     var scale = 600;
@@ -28,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var seed = 1;
     var frames = 0;
     
-    var _tree = {};
+    
 
     function addBranches(branch, splits, depth, angle) {
 
@@ -151,16 +155,16 @@ document.addEventListener('DOMContentLoaded', () => {
         d = Math.sqrt(cameraX * cameraX + cameraZ * cameraZ);
         d -= Math.sin(frames / 50) / 1.15;
         t = Math.sin(frames / 160) / 40;
-        cameraX = Math.sin(frames / 100) * 50;
-        cameraZ = Math.cos(frames / 100) * 50;
+        // cameraX = Math.sin(frames / 100) * 50;
+        // cameraZ = Math.cos(frames / 100) * 50;
         // cameraY -= Math.cos(frames / 80) / 2;
         yaw = pi + p + t;
         pitch = elevation(cameraX, cameraZ, cameraY) - pi/1.825;
 
         // while (trees.length) trees.splice(0, 1);
-        angle = Math.pow(Math.cos(frames / 100), 2) * pi/2
-        splits = 3;
-        depth = 5;
+        angle = Math.pow(Math.cos(frames / 100), 2) * 5*pi/12 + pi/12
+        splits = _splits;
+        depth = _depth;
         _tree = spawnTree(0, 25, 0, splits, depth, angle);
     }
 
@@ -201,10 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
             ctx.lineWidth = (_tree.height - branch.depth +1)
-            // ctx.lineWidth = 5000 / Math.pow(branch.depth + _tree.splits, 1.5) / (1 + point1.d);
             ctx.beginPath();
-            // ctx.strokeStyle = rgb(3 + _tree.splits + pi / 2 / _tree.height * branch.depth + frames/60);
-            ctx.strokeStyle = 'hsl(' + ((100*(branch.depth/_tree.height)+frames)) + ',100%,50%';
+            ctx.strokeStyle = 'hsl(' + ((50*(branch.depth/_tree.height)+frames)) + ',100%,50%';
             ctx.moveTo(point1.x, point1.y);
             ctx.lineTo(point2.x, point2.y);
             ctx.stroke();
@@ -214,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function draw() {
 
-        // ctx.clearRect(0, 0, cx * 2, cy * 2);
+        ctx.clearRect(0, 0, cx * 2, cy * 2);
         // drawFloor();
         ctx.globalAlpha = 0.5;
         drawBranches(_tree.branches[0]);
