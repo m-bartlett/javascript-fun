@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 3;
-    var _depth = 8;
+    var _depth = 7;
     
     var cameraX = Math.sin(pi/_splits)*55;
     var cameraZ = Math.cos(pi/_splits)*55;
@@ -155,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
         d = Math.sqrt(cameraX * cameraX + cameraZ * cameraZ);
         d -= Math.sin(frames / 50) / 1.15;
         t = Math.sin(frames / 160) / 40;
-        // cameraX = Math.sin(frames / 100) * 50;
-        // cameraZ = Math.cos(frames / 100) * 50;
+        cameraX = Math.sin(frames / 100) * 55;
+        cameraZ = Math.cos(frames / 100) * 55;
         // cameraY -= Math.cos(frames / 80) / 2;
         yaw = pi + p + t;
         pitch = elevation(cameraX, cameraZ, cameraY) - pi/1.825;
