@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 2;
-    var _depth = 7;
+    var _depth = 5;
     var bulbs = Math.pow(_splits, _depth)
 
     var cameraX = Math.sin(pi / _splits) * 55;
@@ -30,21 +30,23 @@ document.addEventListener('DOMContentLoaded', () => {
     var scale = 600;
     var treeSize = 20;
     var seed = 1;
-    var frames = 0;
+    var frames = 600;
 
 
 
     function addBranches(branch, splits, depth, angle) {
 
         branch.branches = [];
-        branch.length /= 1.65 / growth
+        branch.length /= 1.725 / growth
         if (branch.depth > depth) return;
         for (var m = 0; m < splits; ++m) {
             var x1 = branch.x2,
                 y1 = branch.y2,
                 z1 = branch.z2,
-                // p1 = pi * 2 / splits * m + frames / 60,
-                p1 = pi * 2 / splits * m + (branch.depth > 1 ? frames / 60 : 0),
+                p1 = pi * 2 / splits * m + frames / 60,
+                // p1 = pi * 2 / splits * m + (branch.depth > 1 ? frames / 60 : 0),
+                // p1 = pi * 2 / splits * m + (branch.depth > 1 ? (branch.depth % 2 ? frames / 60 : -frames / 60) : 0),
+                // p1 = pi * 2 / splits * m + (branch.depth % 2 ? frames / 60 : -frames / 60),
                 p2 = pi + angle,
                 x2 = Math.sin(p1) * Math.sin(p2) * branch.length, // / 1.65,
                 y2 = Math.cos(p2) * branch.length, // / 1.65,
@@ -89,9 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
             length: treeSize * growth,
             depth: 1
         };
-        branch.x2 = branch.x1 + Math.sin(branch.p1) * Math.sin(branch.p2) * branch.length;
-        branch.y2 = branch.y1 + Math.cos(branch.p2) * branch.length;
-        branch.z2 = branch.z1 + Math.cos(branch.p1) * Math.sin(branch.p2) * branch.length;
+        branch.x2 = branch.x1
+            // branch.x2 = branch.x1 + Math.sin(branch.p1) * Math.sin(branch.p2) * branch.length;
+        branch.y2 = branch.y1 - branch.length;
+        // branch.z2 = branch.z1 + Math.cos(branch.p1) * Math.sin(branch.p2) * branch.length;
+        branch.z2 = branch.z1
 
         tree.branches.push(branch);
         addBranches(tree.branches[0], splits, depth, angle);
@@ -164,7 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pitch = elevation(cameraX, cameraZ, cameraY) - pi / 1.825;
 
         // while (trees.length) trees.splice(0, 1);
-        angle = (Math.sin(frames / 240) + 1) * 2.5 * pi / 12 + pi / 12
+        // angle = (Math.sin(frames / 240) + 1) * 2.5 * pi / 12 + pi / 12
+        angle = (Math.sin(frames / 240) + 1) * pi / 6 + pi / 6
             // angle = pi / 2
         splits = _splits;
         depth = _depth;
@@ -208,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
             // ctx.lineWidth = 1
-            ctx.lineWidth = (_tree.height - branch.depth + 0.5) * 1.75
+            ctx.lineWidth = (_tree.height - branch.depth + 1) * 1.725
             ctx.lineWidth *= growth
             ctx.beginPath();
             // ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames)) + ',50%,50%';
@@ -223,12 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillRect(point2.x - ctx.lineWidth / 2, point2.y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
             // ctx.fill();
             if (branch.depth > _tree.height) {
-                ctx.globalAlpha = 0.25;
+                ctx.globalAlpha = 0.33;
                 // ctx.strokeStyle = 'hsl(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%';
                 // ctx.fillStyle = 'hsla(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%,0.1';
                 ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',100%,50%)';
                 // ctx.lineWidth = 0.25
-                var width = 10 * growth;
+                var width = 12 * growth;
                 ctx.arc(point2.x, point2.y, width, 0, 2 * pi)
                     // ctx.strokeRect(point2.x - width / 2, point2.y - width / 2, width, width);
                     // ctx.stroke();
