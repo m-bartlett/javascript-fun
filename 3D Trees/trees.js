@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // drawFloor();
         if (growth < 1) growth += 0.002
         drawBranches(_tree.branches[0]);
-        // colors %= bulbs;
+        colors = 0;
     }
 
     (function frame() {
