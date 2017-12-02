@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    //<Standard canvas management>////////////////////////
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext('2d');
     var cy = canvas.height / 2;
@@ -19,20 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
     var pi = Math.PI;
 
     var _tree = {};
-    var _splits = 3;
-    var _depth = 7;
-    
-    var cameraX = Math.sin(pi/_splits)*55;
-    var cameraZ = Math.cos(pi/_splits)*55;
+    var _splits = 2;
+    var _depth = 8;
+
+    var cameraX = Math.sin(pi / _splits) * 55;
+    var cameraZ = Math.cos(pi / _splits) * 55;
     var cameraY = -10;
     var pitch = 0;
     var yaw = 0;
     var scale = 600;
-    var treeSize = 25;
+    var treeSize = 20;
     var seed = 1;
     var frames = 0;
-    
-    
+
+
 
     function addBranches(branch, splits, depth, angle) {
 
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var x1 = branch.x2,
                 y1 = branch.y2,
                 z1 = branch.z2,
-                p1 = pi * 2 / splits * m,
+                p1 = pi * 2 / splits * m + frames / 60,
                 p2 = pi + angle,
                 x2 = Math.sin(p1) * Math.sin(p2) * branch.length / 1.65,
                 y2 = Math.cos(p2) * branch.length / 1.65,
@@ -83,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             y1: y,
             z1: z,
             p1: 0,
-            p2: pi - 0.00001,
+            p2: pi,
             length: treeSize,
             depth: 1
         };
@@ -155,14 +154,15 @@ document.addEventListener('DOMContentLoaded', () => {
         d = Math.sqrt(cameraX * cameraX + cameraZ * cameraZ);
         d -= Math.sin(frames / 50) / 1.15;
         t = Math.sin(frames / 160) / 40;
-        cameraX = Math.sin(frames / 100) * 55;
-        cameraZ = Math.cos(frames / 100) * 55;
+        // cameraX = Math.sin(frames / 100) * 55;
+        // cameraZ = Math.cos(frames / 100) * 55;
         // cameraY -= Math.cos(frames / 80) / 2;
         yaw = pi + p + t;
-        pitch = elevation(cameraX, cameraZ, cameraY) - pi/1.825;
+        pitch = elevation(cameraX, cameraZ, cameraY) - pi / 1.825;
 
         // while (trees.length) trees.splice(0, 1);
-        angle = Math.pow(Math.cos(frames / 100), 2) * 5*pi/12 + pi/12
+        angle = Math.pow(Math.cos(frames / 120), 2) * 5 * pi / 12 + pi / 12
+            // angle = pi / 2
         splits = _splits;
         depth = _depth;
         _tree = spawnTree(0, 25, 0, splits, depth, angle);
@@ -204,9 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
         point1 = rasterizePoint(branch.x1, branch.y1, branch.z1);
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
-            ctx.lineWidth = (_tree.height - branch.depth +1)
+            ctx.lineWidth = (_tree.height - branch.depth + 1)
             ctx.beginPath();
-            ctx.strokeStyle = 'hsl(' + ((50*(branch.depth/_tree.height)+frames)) + ',100%,50%';
+            ctx.strokeStyle = 'hsl(' + ((50 * (branch.depth / _tree.height) + frames)) + ',100%,50%';
             ctx.moveTo(point1.x, point1.y);
             ctx.lineTo(point2.x, point2.y);
             ctx.stroke();
