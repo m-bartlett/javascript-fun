@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.lineWidth = 1
             ctx.lineWidth = (_tree.height - branch.depth + 2) / 2
             ctx.beginPath();
-            ctx.strokeStyle = 'hsl(' + ((50 * (branch.depth / _tree.height) + frames)) + ',100%,50%';
+            ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames)) + ',100%,50%';
             ctx.moveTo(point1.x, point1.y);
             ctx.lineTo(point2.x, point2.y);
             ctx.stroke();
@@ -217,10 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function draw() {
-
-        ctx.clearRect(0, 0, cx * 2, cy * 2);
+        ctx.globalAlpha = 0.025;
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, cx * 2, cy * 2);
+        ctx.globalAlpha = 1;
         // drawFloor();
-        ctx.globalAlpha = 0.5;
         drawBranches(_tree.branches[0]);
     }
 
