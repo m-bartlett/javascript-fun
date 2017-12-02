@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 2;
-    var _depth = 8;
+    var _depth = 7;
     var bulbs = Math.pow(_splits, _depth)
 
     var cameraX = Math.sin(pi / _splits) * 55;
