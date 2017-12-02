@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 2;
-    var _depth = 8;
+    var _depth = 10;
 
     var cameraX = Math.sin(pi / _splits) * 55;
     var cameraZ = Math.cos(pi / _splits) * 55;
@@ -36,16 +36,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function addBranches(branch, splits, depth, angle) {
 
         branch.branches = [];
+        branch.length /= 1.5
         if (branch.depth > depth) return;
         for (var m = 0; m < splits; ++m) {
             var x1 = branch.x2,
                 y1 = branch.y2,
                 z1 = branch.z2,
-                p1 = pi * 2 / splits * m + frames / 60,
+                p1 = pi * 2 / splits * m + (branch.depth > 1 ? frames / 60 : 0),
                 p2 = pi + angle,
-                x2 = Math.sin(p1) * Math.sin(p2) * branch.length / 1.65,
-                y2 = Math.cos(p2) * branch.length / 1.65,
-                z2 = Math.cos(p1) * Math.sin(p2) * branch.length / 1.65,
+                x2 = Math.sin(p1) * Math.sin(p2) * branch.length, // / 1.65,
+                y2 = Math.cos(p2) * branch.length, // / 1.65,
+                z2 = Math.cos(p1) * Math.sin(p2) * branch.length, // / 1.65,
                 p = Math.atan2(y2, z2),
                 d = Math.sqrt(y2 * y2 + z2 * z2),
                 y2 = y1 - Math.sin(p + branch.p2) * d,
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     z2: z2,
                     p1: Math.atan2(x2 - x1, z2 - z1),
                     p2: elevation(x2 - x1, z2 - z1, y2 - y1),
-                    length: branch.length / 1.65,
+                    length: branch.length, // / 1.65,
                     depth: branch.depth + 1
                 };
             branch.branches.push(newBranch);
@@ -161,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pitch = elevation(cameraX, cameraZ, cameraY) - pi / 1.825;
 
         // while (trees.length) trees.splice(0, 1);
-        angle = Math.pow(Math.cos(frames / 120), 2) * 5 * pi / 12 + pi / 12
+        angle = (Math.sin(frames / 240) + 1) * 2.5 * pi / 12 + pi / 12
             // angle = pi / 2
         splits = _splits;
         depth = _depth;
@@ -204,7 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
         point1 = rasterizePoint(branch.x1, branch.y1, branch.z1);
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
-            ctx.lineWidth = (_tree.height - branch.depth + 1)
+            // ctx.lineWidth = 1
+            ctx.lineWidth = (_tree.height - branch.depth + 2) / 2
             ctx.beginPath();
             ctx.strokeStyle = 'hsl(' + ((50 * (branch.depth / _tree.height) + frames)) + ',100%,50%';
             ctx.moveTo(point1.x, point1.y);
