@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 2;
-    var _depth = 9;
+    var _depth = 8;
     var bulbs = Math.pow(_splits, _depth)
 
     var cameraX = Math.sin(pi / _splits) * 55;
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
             // ctx.lineWidth = 1
-            ctx.lineWidth = (_tree.height - branch.depth + 1)
+            ctx.lineWidth = (_tree.height - branch.depth + 0.5) * 1.75
             ctx.lineWidth *= growth
             ctx.beginPath();
             // ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames)) + ',50%,50%';
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillRect(point2.x - ctx.lineWidth / 2, point2.y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
             // ctx.fill();
             if (branch.depth > _tree.height) {
-                ctx.globalAlpha = 1 / (_depth - 1);
+                ctx.globalAlpha = 0.25;
                 // ctx.strokeStyle = 'hsl(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%';
                 // ctx.fillStyle = 'hsla(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%,0.1';
                 ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',100%,50%)';
