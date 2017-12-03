@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 2;
-    var _depth = 5;
+    var _depth = 9;
     var bulbs = Math.pow(_splits, _depth)
 
     var cameraX = Math.sin(pi / _splits) * 55;
@@ -37,17 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function addBranches(branch, splits, depth, angle) {
 
         branch.branches = [];
-        branch.length /= 1.725 / growth
+        branch.length /= 1.575 / growth
         if (branch.depth > depth) return;
         for (var m = 0; m < splits; ++m) {
             var x1 = branch.x2,
                 y1 = branch.y2,
                 z1 = branch.z2,
-                p1 = pi * 2 / splits * m + frames / 60,
+                // p1 = pi * 2 / splits * m + frames / 60,
+                p1 = pi * 2 / splits * m + ((pi - 0.001) / 2.001 * (Math.sin(pi * frames / 180) + 1.001))
                 // p1 = pi * 2 / splits * m + (branch.depth > 1 ? frames / 60 : 0),
                 // p1 = pi * 2 / splits * m + (branch.depth > 1 ? (branch.depth % 2 ? frames / 60 : -frames / 60) : 0),
                 // p1 = pi * 2 / splits * m + (branch.depth % 2 ? frames / 60 : -frames / 60),
-                p2 = pi + angle,
+            p2 = pi + angle,
                 x2 = Math.sin(p1) * Math.sin(p2) * branch.length, // / 1.65,
                 y2 = Math.cos(p2) * branch.length, // / 1.65,
                 z2 = Math.cos(p1) * Math.sin(p2) * branch.length, // / 1.65,
@@ -170,18 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // while (trees.length) trees.splice(0, 1);
         // angle = (Math.sin(frames / 240) + 1) * 2.5 * pi / 12 + pi / 12
         angle = (Math.sin(frames / 240) + 1) * pi / 6 + pi / 6
-            // angle = pi / 2
+            // angle = pi / 4
         splits = _splits;
         depth = _depth;
         _tree = spawnTree(0, 25, 0, splits, depth, angle);
-    }
-
-    function rgb(col) {
-
-        var r = parseInt((0.5 + Math.sin(col) * 0.5) * 16);
-        var g = parseInt((0.5 + Math.cos(col) * 0.5) * 16);
-        var b = parseInt((0.5 - Math.sin(col) * 0.5) * 16);
-        return "#" + r.toString(16) + g.toString(16) + b.toString(16);
     }
 
     function drawFloor() {
@@ -213,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
             // ctx.lineWidth = 1
-            ctx.lineWidth = (_tree.height - branch.depth + 1) * 1.725
+            ctx.lineWidth = (_tree.height - branch.depth + 1) * 1.65
             ctx.lineWidth *= growth
             ctx.beginPath();
             // ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames)) + ',50%,50%';
@@ -228,10 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillRect(point2.x - ctx.lineWidth / 2, point2.y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
             // ctx.fill();
             if (branch.depth > _tree.height) {
-                ctx.globalAlpha = 0.33;
+                ctx.globalAlpha = 0.1;
                 // ctx.strokeStyle = 'hsl(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%';
                 // ctx.fillStyle = 'hsla(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%,0.1';
-                ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',100%,50%)';
+                ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',' + (100 * growth * growth) + '%,50%)';
                 // ctx.lineWidth = 0.25
                 var width = 12 * growth;
                 ctx.arc(point2.x, point2.y, width, 0, 2 * pi)
@@ -245,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (var m = 0; m < branch.branches.length; ++m) drawBranches(branch.branches[m]);
     }
 
-    var growth = 0.1;
+    var growth = 0.05;
     var colors = 0;
 
     function draw() {
@@ -258,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (growth < 1) growth += 0.002
         drawBranches(_tree.branches[0]);
         colors = 0;
+        console.log(frames)
     }
 
     (function frame() {
