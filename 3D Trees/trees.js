@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // while (trees.length) trees.splice(0, 1);
         // angle = (Math.sin(frames / 240) + 1) * 2.5 * pi / 12 + pi / 12
-        angle = (Math.sin(frames / 240) + 1) * pi / 6 + pi / 6
+        angle = (Math.sin(frames / 230) + 1) * pi / 6 + pi / 6
             // angle = pi / 4
         splits = _splits;
         depth = _depth;
