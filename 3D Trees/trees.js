@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 y1 = branch.y2,
                 z1 = branch.z2,
                 // p1 = pi * 2 / splits * m + frames / 60,
-                p1 = pi * 2 / splits * m + ((pi - 0.001) / 2.001 * (Math.sin(pi * frames / 180) + 1.001))
+                p1 = pi * 2 / splits * m + ((pi - 0.001) / 2.001 * (Math.sin(pi * frames / 360) + 1.001))
                 // p1 = pi * 2 / splits * m + (branch.depth > 1 ? frames / 60 : 0),
                 // p1 = pi * 2 / splits * m + (branch.depth > 1 ? (branch.depth % 2 ? frames / 60 : -frames / 60) : 0),
                 // p1 = pi * 2 / splits * m + (branch.depth % 2 ? frames / 60 : -frames / 60),
@@ -209,8 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.lineWidth = (_tree.height - branch.depth + 1) * 1.65
             ctx.lineWidth *= growth
             ctx.beginPath();
-            // ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames)) + ',50%,50%';
-            ctx.strokeStyle = '#ddd';
+            // ctx.strokeStyle = 'hsl(' + (frames) + ',100%,' + (50 + (branch.depth / _tree.height) * 50) + '%';
+            ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames * 1.25)) + ',50%,' + (75 + 25 * -Math.sin(pi * frames / 360)) + '%';
+            // ctx.strokeStyle = '#ddd';
             ctx.moveTo(point1.x, point1.y);
             ctx.lineTo(point2.x, point2.y);
             ctx.stroke();
@@ -221,12 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillRect(point2.x - ctx.lineWidth / 2, point2.y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
             // ctx.fill();
             if (branch.depth > _tree.height) {
-                ctx.globalAlpha = 0.1;
+                ctx.globalAlpha = 0.075;
                 // ctx.strokeStyle = 'hsl(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%';
                 // ctx.fillStyle = 'hsla(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%,0.1';
-                ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',' + (100 * growth * growth) + '%,50%)';
+                ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',100%,' + (75 + 25 * Math.sin(pi * frames / 360)) + '%)';
                 // ctx.lineWidth = 0.25
-                var width = 12 * growth;
+                var width = 12 * growth * growth;
                 ctx.arc(point2.x, point2.y, width, 0, 2 * pi)
                     // ctx.strokeRect(point2.x - width / 2, point2.y - width / 2, width, width);
                     // ctx.stroke();
