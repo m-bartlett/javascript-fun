@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillRect(point2.x - ctx.lineWidth / 2, point2.y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
             // ctx.fill();
             if (branch.depth > _tree.height) {
-                ctx.globalAlpha = 0.33;
+                ctx.globalAlpha = Math.pow(Math.sin(pi * frames / 360), 2) * 0.5 + 0.25;
                 // ctx.strokeStyle = 'hsl(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%';
                 // ctx.fillStyle = 'hsla(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%,0.1';
                 ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',100%,' + (75 + 25 * Math.sin(pi * frames / 360)) + '%)';
@@ -235,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         ctx.save();
         ctx.strokeStyle = 'hsl(' + ((100 * ((branch.depth + 1) / _tree.height) + frames * 1.25)) + ',50%,' + (75 + 25 * -Math.sin(pi * frames / 360)) + '%';
+        // ctx.lineWidth = 1
         ctx.lineWidth = (_tree.height - branch.depth) * 1.65 * growth
         for (var m = 0; m < branch.branches.length; ++m) drawBranches(branch.branches[m]);
         ctx.restore();
