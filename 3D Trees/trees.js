@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var _tree = {};
     var _splits = 2;
-    var _depth = 9;
+    var _depth = 6;
     var bulbs = Math.pow(_splits, _depth)
 
     var cameraX = Math.sin(pi / _splits) * 55;
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addBranches(branch, splits, depth, angle) {
 
         branch.branches = [];
-        branch.length /= 1.575 / growth
+        branch.length /= 1.65 / growth
         if (branch.depth > depth) return;
         for (var m = 0; m < splits; ++m) {
             var x1 = branch.x2,
@@ -206,11 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
         point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
         if (point1.d != -1 && point2.d != -1) {
             // ctx.lineWidth = 1
-            ctx.lineWidth = (_tree.height - branch.depth + 1) * 1.65
-            ctx.lineWidth *= growth
             ctx.beginPath();
             // ctx.strokeStyle = 'hsl(' + (frames) + ',100%,' + (50 + (branch.depth / _tree.height) * 50) + '%';
-            ctx.strokeStyle = 'hsl(' + ((60 * (branch.depth / _tree.height) + frames * 1.25)) + ',50%,' + (75 + 25 * -Math.sin(pi * frames / 360)) + '%';
             // ctx.strokeStyle = '#ddd';
             ctx.moveTo(point1.x, point1.y);
             ctx.lineTo(point2.x, point2.y);
@@ -222,13 +219,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillRect(point2.x - ctx.lineWidth / 2, point2.y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
             // ctx.fill();
             if (branch.depth > _tree.height) {
-                ctx.globalAlpha = 0.075;
+                ctx.globalAlpha = 0.33;
                 // ctx.strokeStyle = 'hsl(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%';
                 // ctx.fillStyle = 'hsla(' + (360 * (colors / Math.pow(2, _tree.height)) + frames) + ',100%,50%,0.1';
                 ctx.fillStyle = 'hsl(' + (360 * (colors / bulbs) + frames) + ',100%,' + (75 + 25 * Math.sin(pi * frames / 360)) + '%)';
                 // ctx.lineWidth = 0.25
-                var width = 12 * growth * growth;
                 ctx.arc(point2.x, point2.y, width, 0, 2 * pi)
+                    // ctx.fillRect(point2.x - width / 2, point2.y - width / 2, width, width);
                     // ctx.strokeRect(point2.x - width / 2, point2.y - width / 2, width, width);
                     // ctx.stroke();
                 ctx.fill();
@@ -236,11 +233,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 colors++;
             }
         }
+        ctx.save();
+        ctx.strokeStyle = 'hsl(' + ((100 * ((branch.depth + 1) / _tree.height) + frames * 1.25)) + ',50%,' + (75 + 25 * -Math.sin(pi * frames / 360)) + '%';
+        ctx.lineWidth = (_tree.height - branch.depth) * 1.65 * growth
         for (var m = 0; m < branch.branches.length; ++m) drawBranches(branch.branches[m]);
+        ctx.restore();
     }
 
     var growth = 0.05;
     var colors = 0;
+    var widh;
+
 
     function draw() {
         // ctx.globalAlpha = 0.1;
@@ -249,8 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.clearRect(0, 0, cx * 2, cy * 2);
         // ctx.globalAlpha = 1;
         // drawFloor();
-        if (growth < 1) growth += 0.002
+        if (growth < 1) {
+            growth += 0.002
+            width = 12 * growth * growth;
+        }
+        ctx.save();
+        ctx.strokeStyle = 'hsl(' + ((60 * ((branch.depth + 1) / _tree.height) + frames * 1.25)) + ',50%,' + (75 + 25 * -Math.sin(pi * frames / 360)) + '%';
+        ctx.lineWidth = (_tree.height - branch.depth) * 1.65 * growth
         drawBranches(_tree.branches[0]);
+        ctx.restore();
         colors = 0;
         console.log(frames)
     }
